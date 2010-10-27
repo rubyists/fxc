@@ -2,7 +2,7 @@
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
 #
-module Fxc
+module FXC
   module Rack
     class Middleware
       def initialize(app)
@@ -11,20 +11,27 @@ module Fxc
 
       def call(env)
         params = ::Rack::Request.new(env)
-        return @app.call(env) unless params["section"]
+        if params["section"]
+          path = params["section"] + "/"
 
-        path = params["section"] + "/"
+          path << case path
+          when "dialplan/"
+            dp_req(params)
+          when "directory/"
+            dir_req(params)
+          when "configuration/"
+            conf_req(params)
+          end
 
-        path << case path
-        when "dialplan/"
-          dp_req(params)
-        when "directory/"
-          dir_req(params)
-        when "configuration/"
-          conf_req(params)
+          path << "/#{params["hostname"]}"
+          env["PATH_INFO"] = "#{env['PATH_INFO']}/#{path}".squeeze('/').sub(%r{/$},'')
+=begin
+          env["REQUEST_URI"] = ("%s://%s/%s" % [
+            env["rack.url_scheme"],
+            env["HTTP_HOST"],
+            env["PATH_INFO"]]).squeeze('/')
+=end
         end
-
-        env["PATH_INFO"] = "#{env['PATH_INFO']}/#{path}".squeeze('/')
         @app.call(env)
       end
 

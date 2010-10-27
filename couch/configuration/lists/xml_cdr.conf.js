@@ -9,8 +9,22 @@ function(head, req){
     return result;
   };
 
+  var doc = getRow().value;
+
   start({code: 200, headers: {'Content-Type': 'freeswitch/xml'}});
   send('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>' + "\n");
-
-  log(head);
+  send(
+<document type="freeswitch/xml">
+  <section name="configuration">
+    <configuration name={doc.name} description={doc.description}>
+      <settings>
+        {each(doc.settings, function(name, value){
+          return <param name={name} value={value} />
+        })}
+      </settings>
+    </configuration>
+  </section>
+</document>
+  );
+  ;
 }
