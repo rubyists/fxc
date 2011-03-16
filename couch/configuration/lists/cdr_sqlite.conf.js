@@ -11,13 +11,11 @@ function(head, req){
         })}
       </settings>
       
-      <schema>
-        {each(doc.schema, function(name, args){
-          var field = <field var={name} />;
-          each(args, function(key, value){ field.@[key] = value });
-          return field;
+      <templates>
+        {each(doc.templates, function(name, value){
+          return <template name={name}>{value}</template>;
         })}
-      </schema>
+      </templates>
     </configuration>
   </section>
 </document>

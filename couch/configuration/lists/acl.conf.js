@@ -6,7 +6,7 @@ function(head, req){
   <section name="configuration">
     <configuration name={doc.name} description={doc.description}>
       <network-lists>
-        {each(doc.network_lists, function(name, list){
+        {each(doc['network-lists'], function(name, list){
           var xml = <list name={name} default={list.default} />;
           list.nodes.forEach(function(node){
             var tag = <node />;

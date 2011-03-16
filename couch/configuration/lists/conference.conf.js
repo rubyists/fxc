@@ -11,7 +11,7 @@ function(head, req){
         })}
       </advertise>
       <caller-controls>
-        {each(doc.controls, function(name, controls){
+        {each(doc['caller-controls'], function(name, controls){
           var xml = <group name={name} />;
           for(key in controls){
             xml.group += <control action={key} digits={controls[key]} />;

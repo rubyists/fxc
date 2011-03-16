@@ -5,17 +5,11 @@ function(head, req){
 <document type="freeswitch/xml">
   <section name="configuration">
     <configuration name={doc.name} description={doc.description}>
-      <network-lists>
-        {each(doc.network_lists, function(name, list){
-          var xml = <list name={name} default={list.default} />;
-          list.nodes.forEach(function(node){
-            var tag = <node />;
-            for(key in node){ tag.@[key] = node[key]; }
-            xml.list += tag;
-          });
-          return xml;
+      <settings>
+        {each(doc.settings, function(name, value){
+          return <param name={name} value={value} />
         })}
-      </network-lists>
+      </settings>
     </configuration>
   </section>
 </document>

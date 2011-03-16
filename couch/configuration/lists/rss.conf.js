@@ -5,11 +5,11 @@ function(head, req){
 <document type="freeswitch/xml">
   <section name="configuration">
     <configuration name={doc.name} description={doc.description}>
-      <settings>
-        {each(doc.settings, function(name, value){
-          return <param name={name} value={value} />
-        })}
-      </settings>
+      <feeds>{
+        each(doc.feeds, function(name, value){
+          return <feed name={name}>{value}</feed>
+        })
+      }</feeds>
     </configuration>
   </section>
 </document>

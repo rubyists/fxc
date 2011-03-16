@@ -5,11 +5,11 @@ function(head, req){
 <document type="freeswitch/xml">
   <section name="configuration">
     <configuration name={doc.name} description={doc.description}>
-      <settings>
-        {each(doc.settings, function(name, value){
-          return <param name={name} value={value} />
+      <modules>
+        {each(doc.modules, function(i, module){
+          return <load module={module} />
         })}
-      </settings>
+      </modules>
     </configuration>
   </section>
 </document>

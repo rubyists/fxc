@@ -10,14 +10,15 @@ function(head, req){
           return <param name={name} value={value} />
         })}
       </settings>
-      
-      <schema>
-        {each(doc.schema, function(name, args){
-          var field = <field var={name} />;
-          each(args, function(key, value){ field.@[key] = value });
-          return field;
-        })}
-      </schema>
+      {each(doc.profiles, function(type, params){
+        return(
+          <profile type={type}>
+            {each(params, function(name, value){
+              return <param name={name} value={value} />
+            })}
+          </profile>
+        )
+      })}
     </configuration>
   </section>
 </document>

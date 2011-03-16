@@ -1,5 +1,5 @@
 function(doc){
-  if(doc.name && !(doc.server === undefined)){
+  if(/\.conf$/.test(doc.name)){
     emit([doc.name, doc.server], doc);
   }
 }

@@ -1,7 +1,7 @@
 require 'makura'
 
-Makura::Model.server = 'http://jimmy:5984'
-Makura::Model.database = 'fxc'
+Makura::Model.server = 'http://localhost:5984'
+Makura::Model.database = 'fxc_spec'
 
 root = File.expand_path("../couch/configuration", __FILE__)
 glob = File.join(root, "**/*.js")

@@ -34,7 +34,12 @@ module FXC
       end
 
       if parent
-        node.xpath('/include')
+        inc = node.xpath('/include')
+        if inc.empty?
+          node.xpath('/') # skinny_profiles doesn't wrap with <include>
+        else
+          inc
+        end
       else
         conf = node.xpath('/configuration')
         conf.empty? ? node : conf
@@ -47,7 +52,7 @@ module FXC
       fs_install_paths = [
         ENV["HOME"], ENV["HOME"] + "/freeswitch",
         "/usr/local/freeswitch", "/opt/freeswitch", "/usr/freeswitch",
-        "/home/freeswitch/freeswitch", '/home/freeswitch'
+        "/home/freeswitch/freeswitch", '/home/freeswitch', '/var/lib/freeswitch'
       ]
       fs_install_paths.unshift(ENV['FREESWITCH_PATH']) if ENV['FREESWITCH_PATH']
       good_path = fs_install_paths.find do |fs_path|
@@ -70,7 +75,7 @@ module FXC
     def initialize(root = ConverterHelper.find_freeswitch_install, options = {})
       @root = File.expand_path(root)
       @opts = {
-        couch_server: 'http://jimmy:5984',
+        couch_server: 'http://localhost:5984',
         couch_db: 'fxc_spec',
         couch_preserve_db: false,
         couch_no_create: false,
@@ -99,13 +104,12 @@ module FXC
     end
 
     def convert_configuration
-
       require_relative 'import/configuration'
 
       read_configuration do |mod, xml|
         doc = {
           name: "#{mod}.conf",
-          database: nil,
+          server: nil,
           '_id' => "#{@opts[:server]}_#{mod}.conf",
         }
 
@@ -113,10 +117,12 @@ module FXC
           puts "Attempt conversion of #{mod}"
           if Configuration.respond_to?(mod)
             Configuration.send(mod, xml, doc)
-            rec = couchdb.save(doc)
-            p rec
 
-            # pp DB[doc['_id']]
+            if description = xml[0][:description]
+              doc[:description] ||= description
+            end
+
+            rec = couchdb.save(doc)
           else
             raise "No converter for #{mod}"
           end
@@ -125,6 +131,14 @@ module FXC
     end
 
     def read_configuration
+      Dir.glob(File.join(@root, '/conf/autoload_configs/*.conf.xml')) do |path|
+        mod = File.basename(path, '.conf.xml')
+        xml = ConverterHelper.parse(path)
+        yield mod, xml
+      end
+    end
+
+    def read_configuration_in_modules_conf
       Nokogiri::XML(File.read(modules_xml)).xpath('/configuration/modules/load[@module]').each do |tag|
         mod = tag['module'].sub(/^mod_/, '')
         mod_xml = File.join(File.dirname(modules_xml), "#{mod}.conf.xml")
@@ -170,7 +184,6 @@ module FXC
           doc = {server: @opts[:server]}
           FXC::Converter::Directory.parse_domain(domain, doc, couchdb)
           rec = couchdb.save(doc)
-          p rec
         end
       end
     end
@@ -187,7 +200,7 @@ end
 
 if __FILE__ == $0
   converter = FXC::Converter.new
-  #converter.convert(:configuration)
-  #converter.convert(:directory)
+  converter.convert(:configuration)
+  converter.convert(:directory)
   converter.convert(:dialplan)
 end
