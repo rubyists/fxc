@@ -75,8 +75,8 @@ module FXC
     def initialize(root = ConverterHelper.find_freeswitch_install, options = {})
       @root = File.expand_path(root)
       @opts = {
-        couch_server: 'http://localhost:5984',
-        couch_db: 'fxc_spec',
+        couch_server: FXC.options.couch_uri,
+        couch_db: FXC.options.couch_db,
         couch_preserve_db: false,
         couch_no_create: false,
         server: %x{hostname}.strip,

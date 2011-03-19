@@ -13,34 +13,38 @@ module FXC
       not_found
     end
 
-    def register(profile, extension)
-      Innate::Log.debug("Received register directory request: #{request.inspect}")
-      user = User[:extension => extension.to_i, :active => true]
-      user ? render_view(:user, :user => user) : not_found
+    def register(profile, extension, server)
+      Innate::Log.debug("Received register directory request: #{request.params.inspect}")
+      if user = User.from_extension(extension, server)
+        Innate::Log.debug("Found user: #{user.inspect}")
+        render_view(:user, user: user)
+      else
+        not_found
+      end
     end
 
     def user_data(extension, domain = nil)
       Innate::Log.debug("Received user_data directory request: #{request.inspect}")
-      user = User[:extension => extension.to_i]
+      user = User.from_extension(extension, domain)
       user ? render_view(:user, :user => user) : not_found
     end
 
     def user_outgoing(extension, domain = nil)
       Innate::Log.debug("Received user_outgoing directory request: #{request.inspect}")
-      user = User[:extension => extension.to_i]
+      user = User.from_extension(extension, domain)
       user ? render_view(:user, :user => user) : not_found
     end
 
     #TODO respond with a proper message count response (see FS wiki)
     def messages(extension, domain = nil)
       Innate::Log.debug("Received messages directory request: #{request.inspect}")
-      user = User[:extension => extension.to_i]
+      user = User.from_extension(extension, domain)
       user ? render_view(:user, :user => user) : not_found
     end
 
     def voicemail(profile, extension)
       Innate::Log.debug("Received voicemail directory request: #{request.inspect}")
-      user = User[:extension => extension.to_i]
+      user = User.from_extension(extension)
       user ? render_view(:user, :user => user) : not_found
     end
 
@@ -48,6 +52,5 @@ module FXC
       Innate::Log.debug("Received network_list directory request: #{request.inspect}")
       render_view(:users, :users => User.active_users)
     end
-
   end
 end

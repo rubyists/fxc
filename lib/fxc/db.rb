@@ -15,16 +15,14 @@ end
 require "logger"
 
 module FXC
-  unless defined?(@@db)
-    @@db = nil
-  end
+  @db ||= nil
 
   def self.db
     setup_db
   end
 
   def self.db=(other)
-    @@db = other
+    @db = other
   end
 
   private
@@ -52,9 +50,9 @@ module FXC
   end
 
   def self.setup_db(root = FXC::ROOT, default_app = 'fxc')
-    return @@db if @@db
+    return @db if @db
 
-    app_db  = ENV["APP_DB"]  || default_app
+    app_db  = FXC.options.db  || default_app
     app_env = ENV["APP_ENV"] || "development"
     root_pgpass = root/".pgpass"
     home_pgpass = Pathname('~/.pgpass').expand_path
@@ -74,11 +72,11 @@ module FXC
 
     if app_db.nil?
       logger.debug("setup_db called but no database defined")
-      @@db = nil
+      @db = nil
     else
       logger.info("Connecting to #{app_db}")
       conn[:logger] = logger
-      @@db = ::Sequel.postgres(app_db, conn)
+      @db = ::Sequel.postgres(app_db, conn)
     end
   end
 end

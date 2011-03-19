@@ -7,6 +7,7 @@ task :migrate, :version do |_, args|
   args.with_defaults(:version => nil)
   require File.expand_path("../../lib/fxc", __FILE__)
   require_relative "../lib/fxc/db"
+  require_relative "../options"
   require 'sequel/extensions/migration'
 
   raise "No DB found" unless FXC.db

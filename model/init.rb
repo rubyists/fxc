@@ -3,14 +3,16 @@
 # The full text can be found in the LICENSE file included with this software
 #
 require_relative '../lib/fxc'
+require_relative '../options'
 require FXC::LIBROOT/:fxc/:db
 raise "No DB Available" unless FXC.db
 
 require 'makura'
-Makura::Model.database = 'fxc'
+Makura::Model.server = FXC.options.couch_uri
+Makura::Model.database = FXC.options.couch_db
 
 # Here go your requires for models:
-#require_relative 'user'
+require_relative 'user'
 #require_relative 'user_variable'
 #require_relative 'target'
 #require_relative 'did'

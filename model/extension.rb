@@ -9,7 +9,6 @@ class FXC::Extension < Sequel::Model
   many_to_one :context, :class => 'FXC::Context'
   plugin :list, :scope => :context_id
 
-
   def self.match(context_id, params)
     all = FXC::Extension.filter(:context_id => context_id).all
     return nil unless all
@@ -23,12 +22,15 @@ class FXC::Extension < Sequel::Model
       end
     end
     matches = all.select do |exten|
-      exten.conditions.detect do |condition|
+      # Need to match the first condition
+      if condition = exten.conditions.first
         if match_val = fs_params[condition.matcher] 
           match_val.match(condition.expression)
         else
           false
         end
+      else
+        false
       end
     end
     

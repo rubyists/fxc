@@ -1,5 +1,6 @@
 require "innate"
 require_relative "lib/fxc"
+require_relative "options"
 require_relative 'node/proxy'
 
 require FXC::ROOT/"model/init"

@@ -1,3 +1,73 @@
+module FXC
+  class User
+    include Makura::Model
+
+    defaults['type'] = 'user'
+
+    properties(
+      :buttons, :domain, :gateways, :groups, :id, :params, :server, :variables,
+      :targets, :cidr, :mailbox
+    )
+
+    def self.view_user_common(view, id, server = nil)
+      if server
+        query = {key: [id, server], limit: 1}
+      else
+        query = {startkey: [id], endkey: [id, {}], limit: 1}
+      end
+
+      query.merge!(limit: 1, include_docs: true)
+      Innate::Log.debug(query: query, view: view)
+      row = database.view(view, query)['rows'].first
+      Innate::Log.debug(row: row)
+      doc = row['doc'] if row
+      new(doc) if doc
+    end
+
+    def self.view_user(id, server = nil)
+      view_user_common('directory/_view/users', id, server)
+    end
+
+    def self.view_active_user(id, server = nil)
+      view_user_common('directory/_view/active_users', id, server)
+    end
+
+    def self.from_extension(extension, server = nil)
+      view_user(extension, server)
+    end
+
+    def self.active_from_extension(extension, server = nil)
+      view_active_user(extension, server)
+    end
+
+    def self.active_users
+      rows = database.view('directory/_view/active_users', include_docs: true)['rows']
+      rows.map do |row|
+        doc = row['doc']
+        new(doc) if doc
+      end.compact
+    end
+
+    def dialstring
+      (targets || {}).group_by{|name, properties|
+        properties['priority']
+      }.map{|priority, values|
+        values.map(&:first).join(',')
+      }.join('|')
+    end
+
+    def add_target(name, priority = 1, type = 'landline')
+      priority, type = priority.to_i, type.to_s.strip
+      raise ArgumentError, "priority must be > 0" unless priority > 0
+      raise ArgumentError, "type cannot be empty" if type.empty?
+
+      self.targets ||= {}
+      targets[name] = {priority: priority, type: type}
+    end
+  end
+end
+
+__END__
 # Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
@@ -32,7 +102,7 @@ class FXC::User < Sequel::Model(FXC.db[:users])
   end
 
   def dialstring
-    pk ? FXC::Dialstring.new(self, targets).to_s : ''
+    pk ? FXC::Dialstring.new(self, targets, '').to_s : ''
   end
 
   def default_variables

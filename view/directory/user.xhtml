@@ -1,16 +1,13 @@
-<user id="#{@user.extension}" mailbox="#{@user.mailbox}" cidr="#{@user.cidr}">
+<user id="#{h @user.id}" mailbox="#{h @user.mailbox}" cidr="#{h @user.cidr}">
   <params>
-    <param name="dial-string" value="#{@user.dialstring}"/>
-    <param name="password" value="#{@user.pin}"/>
-    <param name="vm-password" value="#{@user.pin}"/>
+    <param name="dial-string" value="#{h @user.dialstring}"/>
+    <?r @user.params.each do |key, value| ?>
+      <param name="#{h key}" value="#{h value}"/>
+    <?r end ?>
   </params>
   <variables>
-    <?r @user.user_variables.each do |user_variable| ?>
-      <variable name="#{user_variable.name}" value="#{user_variable.value}" />
-    <?r end ?>
-    <?r if @user.nibble_rate ?>
-      <variable name="nibble_rate"  value="#{@user.nibble_rate}" />
-      <variable name="nibble_account" value=#{@user.extension}" />
+    <?r @user.variables.each do |key, value| ?>
+      <variable name="#{h key}" value="#{h value}" />
     <?r end ?>
   </variables>
 </user>

@@ -1,0 +1,44 @@
+<ul>
+  <?r FXC::Context.each do |context| ?>
+    <li>#{a context.name, :context, context.name}</li>
+  <?r end ?>
+</ul>
+<ul>
+  <?r @extensions.each do |extension| ?>
+    <li>
+      <dl class="extension">
+        <dt class="position">position</dt>      <dd class="position">#{h extension.position}</dd>
+        <dt class="extension">extension</dt>    <dd class="extension">#{h extension.name}</dd>
+        <dt class="continue">continue</dt>      <dd class="continue">#{h extension.continue}</dd>
+        <dt class="description">description</dt><dd class="description">#{extension.description}</dd>
+      </dl>
+      <ul>
+        <?r extension.conditions.each do |condition| ?>
+          <li>
+            <dl class="condition">
+              <dt class="name">name</dt><dd class="name">#{h condition.name}</dd>
+              <dt class="description">description</dt><dd class="description">#{h condition.description}</dd>
+              <dt>matcher</dt><dd>#{h condition.matcher}</dd>
+              <dt>expression</dt><dd>#{h condition.expression}</dd>
+              <dt>position</dt><dd>#{h condition.position}</dd>
+              <dt>break</dt><dd>#{h condition.break}</dd>
+            </dl>
+            <ul>
+              <?r condition.actions.each do |action| ?>
+                <li>
+                  <dl class="action">
+                    <dt>position</dt><dd>#{h action.position }</dd>
+                    <dt class="name">name</dt><dd class="name">#{h action.name}</dd>
+                    <dt class="description">description</dt><dd class="description">#{h action.description}</dd>
+                    <dt>application</dt><dd>#{h action.application}</dd>
+                    <dt>data</dt><dd>#{h action.data }</dd>
+                  </dl>
+                </li>
+              <?r end ?>
+            </ul>
+          </li>
+        <?r end ?>
+      </ul>
+    </li>
+  <?r end ?>
+</ul>

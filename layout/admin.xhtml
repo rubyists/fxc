@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin</title>
+    <style>
+      dt {
+        margin: 0;
+        padding: 0;
+        display: inline;
+        font-weight: bold;
+      }
+      dt:after {
+        content: ': ';
+      }
+
+      dd {
+        margin: 0;
+        padding: 0;
+        display: inline;
+      }
+
+      dl.action {
+        background: #cff;
+      }
+
+      dl.condition {
+        background: #fcf;
+      }
+
+      dl.extension {
+        margin-top: 1em;
+        background: #ffc;
+      }
+
+      dt.description, dd.description, dt.name, dd.name {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    #{@content}
+  </body>
+</html>

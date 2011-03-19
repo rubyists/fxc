@@ -12,33 +12,13 @@ module FXC
       @context = FXC::Context.first(:name => context)
       if @context
         Innate::Log.info("<<#{context}>> dialplan request: #{"%s => %s (%s)" % [caller_id, number, rest.join(" ")]}")
-        @did = FXC::Did.first(:number.like Regexp.new(number.sub(/^1(\d{10})/,'1?\1')))
-        if @did 
-          @user = @did.user
-          name = request.params["Caller-Caller-ID-Name"] || number
-          if action = @did.blocked?(number, name)
-            Innate::Log.info("Blocking from #{"%s: %s" % [number, name]} to #{@did.number} with #{action}")
-            begin
-              render_view("blocked_#{action}")
-            rescue
-              render_view(:blocked_call)
-            end
-          else
-            @targets = @did.targets
-            Innate::Log.info("Routing #{@did.number} in '#{context}'. dialstring: (#{@user.dialstring})")
-            # This will render the view named as the context (view/public.xhtml for public, etc)
-            # or fallback to the view/did.xhtml template
-            render_view(context.to_sym) rescue render_view(:did)
-          end
+        @extensions = FXC::Extension.match(@context.id, request.params)
+        if @extensions.size > 0
+          Innate::Log.info("Routing to #{@extensions.inspect}")
+          render_view(:extension)
         else
-          @extensions = FXC::Extension.match(@context.id, request.params)
-          if @extensions.size > 0
-            Innate::Log.info("Routing to #{@extensions.inspect}")
-            render_view(:extension)
-          else
-            Innate::Log.info("No Matches!: " + request.inspect)
-            not_found
-          end
+          Innate::Log.info("No Matches!: " + request.inspect)
+          not_found
         end
       else
         Innate::Log.info("Got unhandled dialplan request: " + request.inspect)

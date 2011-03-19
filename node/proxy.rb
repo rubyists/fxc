@@ -23,3 +23,4 @@ end
 
 require_relative 'directory'
 require_relative 'dialplan'
+require_relative 'admin'

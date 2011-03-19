@@ -13,9 +13,9 @@ class FXC::Condition < Sequel::Model
   def break_string
     case self.break
     when nil 
-      'never'
-    when false
       'on-false'
+    when false
+      'never'
     when true
       'on-true'
     end
