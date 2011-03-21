@@ -3,40 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <title>Admin</title>
-    <style>
-      dt {
-        margin: 0;
-        padding: 0;
-        display: inline;
-        font-weight: bold;
-      }
-      dt:after {
-        content: ': ';
-      }
-
-      dd {
-        margin: 0;
-        padding: 0;
-        display: inline;
-      }
-
-      dl.action {
-        background: #cff;
-      }
-
-      dl.condition {
-        background: #fcf;
-      }
-
-      dl.extension {
-        margin-top: 1em;
-        background: #ffc;
-      }
-
-      dt.description, dd.description, dt.name, dd.name {
-        display: none;
-      }
-    </style>
+    <link href="/css/context.css" rel="stylesheet">
+    <link href="/css/cupertino/jquery-ui-1.8.11.custom.css" rel="stylesheet" />
+    <script src="/js/jquery-1.5.1.min.js"></script>
+    <script src="/js/jquery-ui-1.8.11.custom.min.js"></script>
+    <script src="/js/context.js"></script>
   </head>
   <body>
     #{@content}

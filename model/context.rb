@@ -4,7 +4,7 @@
 #
 class FXC::Context < Sequel::Model(FXC.db[:dialplan_contexts])
   one_to_many :users, :class => 'FXC::User'
-  one_to_many :dids, :class => 'FXC::Did'
+  #one_to_many :dids, :class => 'FXC::Did'
   one_to_many :extensions, :class => 'FXC::Extension'
   one_to_many :gateways, :class => 'FXC::SipGateway', :key => :dialplan_context_id
 

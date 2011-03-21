@@ -44,6 +44,14 @@ module FXC
           :name         => node[:name],
           :description         => node[:description]
         )
+        resave = false
+        [:year, :yday, :mon, :mday, :week, :mweek, :wday, :hour, :minute, :minute_of_day].each { |tod|
+          if attr = node[tod]
+            resave = true
+            condition[tod] = attr
+          end
+        }
+        condition.save if resave
         node.xpath("action").each do |act|
           parse_action act, condition
         end

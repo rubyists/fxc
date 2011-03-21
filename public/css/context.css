@@ -1,0 +1,71 @@
+nav {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 10em;
+}
+
+.extensions {
+  margin-left: 11em;
+}
+
+.action .data:before { content: '('; }
+.action .data:after { content: ')'; }
+
+.action .buttons > span {
+  font-family: monospace;
+  border-radius: 0.3em;
+  cursor: pointer;
+  margin: 0.4em;
+  padding: 0em 0.5em;
+}
+
+.action .ok {
+  background: #0a0;
+  color: #fff;
+}
+.action .ok:hover {
+  background: #0f0;
+}
+
+.action .cancel {
+  background: #a00;
+  color: #fff;
+}
+.action .cancel:hover {
+  background: #f00;
+}
+
+
+dt {
+  margin: 0;
+  padding: 0;
+  display: inline;
+  font-weight: bold;
+}
+dt:after {
+  content: ': ';
+}
+
+dd {
+  margin: 0;
+  padding: 0;
+  display: inline;
+}
+
+li.action {
+  background: #cff;
+}
+
+dl.condition {
+  background: #fcf;
+}
+
+dl.extension {
+  margin-top: 1em;
+  background: #ffc;
+}
+
+dt.description, dd.description, dt.name, dd.name {
+  display: none;
+}

@@ -11,7 +11,9 @@ module FXC
     def index(context = nil, number = nil, caller_id = nil, *rest)
       @context = FXC::Context.first(:name => context)
       if @context
-        Innate::Log.info("<<#{context}>> dialplan request: #{"%s => %s (%s)" % [caller_id, number, rest.join(" ")]}")
+        Innate::Log.info "<<%{context}>> dialplan request: %{cid} => %{num} (%{rest})" % {
+          context: context, cid: caller_id, num: number, rest: rest.join(" ")
+        }
         @extensions = FXC::Extension.match(@context.id, request.params)
         if @extensions.size > 0
           Innate::Log.info("Routing to #{@extensions.inspect}")
@@ -25,5 +27,6 @@ module FXC
         not_found
       end
     end
+
   end
 end

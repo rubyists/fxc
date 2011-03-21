@@ -7,7 +7,10 @@ class FXC::Condition < Sequel::Model
   set_dataset FXC.db[:fs_conditions]
   one_to_many :actions, :class => 'FXC::Action'
   one_to_many :anti_actions, :class => 'FXC::AntiAction'
-  many_to_one :context, :class => 'FXC::Context'
+  many_to_one :extension, :class => 'FXC::Extension'
+  def context
+    extension.context
+  end
   plugin :list, :scope => :extension_id
 
   def break_string
