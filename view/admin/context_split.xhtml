@@ -1,0 +1,131 @@
+<div id="editors">
+  <div class="editor" id="edit-contexts">
+    #{form_for({}, method: :post, action: r(:update_context)){|f|
+      f.fieldset{
+        f.legend 'DID Context'
+
+        f.hidden :id
+
+        f.text 'Name', :name
+        f.text 'Description', :description
+
+        f.submit 'Save Changes'
+      }
+    }}
+  </div>
+
+  <div class="editor" id="edit-extensions">
+    #{form_for({}, method: :post, action: r(:update_extension)){|f|
+      f.fieldset{
+        f.legend 'Extension'
+
+        f.hidden :id
+        f.hidden :position
+        f.hidden :parent
+
+        f.text 'Name', :name
+        f.text 'Description', :description
+
+        f.g.p do
+          f.g.label 'Continue', for: :form_continue
+          f.g.input type: :checkbox, name: :continue, id: :form_continue
+        end
+
+        f.submit 'Save Changes'
+      }
+    }}
+  </div>
+
+  <div class="editor" id="edit-conditions">
+    #{form_for({}, method: :post, action: r(:update_condition)){|f|
+      f.fieldset{
+        f.legend 'Condition'
+
+        f.hidden :id
+        f.hidden :position
+        f.hidden :parent
+
+        f.text 'Name', :name
+        f.text 'Description', :description
+
+        f.text 'Field to match', :matcher
+        f.text 'Match Expression', :expression
+
+        f.text 'Stop after condition is met?', :break
+
+        f.text 'Year', :year
+        f.text 'Month', :mon
+        f.text 'Day of the month', :mday
+
+        f.text 'Hour', :hour
+        f.text 'Minute', :minute
+
+        f.text 'Week of the year', :week
+        f.text 'Day of the year', :yday
+
+        f.text 'Week of the month', :mweek
+        f.text 'Day of the week', :wday
+        f.text 'Minute of the day', :minute_of_day
+
+        f.submit 'Save Changes'
+      }
+    }}
+  </div>
+
+  <div class="editor" id="edit-actions">
+    #{form_for({}, method: :post, action: r(:update_action)){|f|
+      f.fieldset{
+        f.legend 'Action'
+
+        f.hidden :id
+        f.hidden :position
+        f.hidden :parent
+
+        f.text 'Name', :name
+        f.text 'Description', :description
+        f.text 'Application', :application
+        f.text 'Arguments', :data
+
+        f.submit 'Save Changes'
+      }
+    }}
+  </div>
+</div>
+
+<table id="browser">
+  <thead>
+    <tr>
+      <th>Context <a href="#" id="contexts-add">Add</a></th>
+      <th>Extension <a href="#" id="extensions-add">Add</a></th>
+      <th>Condition <a href="#" id="conditions-add">Add</a></th>
+      <th>Action <a href="#" id="actions-add">Add</a></th>
+    </tr>
+  </thead>
+  <body>
+    <tr>
+      <td id="contexts">
+        <ul>
+          <?r @contexts.each do |context| ?>
+            <li id="contexts-#{h context.id}">
+              <span class="name">#{h context.name}</span>
+              <span class="description">#{h context.description}</span>
+              <a href="#" class="open-editor">&#x270D;</a>
+            </li>
+          <?r end ?>
+        </ul>
+      </td>
+      <td id="extensions">
+        <ul>
+        </ul>
+      </td>
+      <td id="conditions">
+        <ul>
+        </ul>
+      </td>
+      <td id="actions">
+        <ul>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>

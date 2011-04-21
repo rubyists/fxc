@@ -2,6 +2,8 @@ require 'tsort'
 require 'pp'
 require 'nokogiri'
 require 'makura'
+require_relative "../fxc"
+require_relative "../../options"
 
 class Hash
   include TSort
@@ -21,8 +23,10 @@ module FXC
       xmls[filename] = node
       node.xpath('//X-PRE-PROCESS[@cmd="include"]').each do |inc|
         glob = File.expand_path(inc[:data], File.dirname(filename))
+        p glob
 
         Dir.glob(glob){|path|
+          p path
           deps[path] ||= []
           deps[filename] << path
           deps.tsort # check for cyclic dependencies.
@@ -109,7 +113,7 @@ module FXC
       read_configuration do |mod, xml|
         doc = {
           name: "#{mod}.conf",
-          server: nil,
+          server: @opts[:server],
           '_id' => "#{@opts[:server]}_#{mod}.conf",
         }
 
