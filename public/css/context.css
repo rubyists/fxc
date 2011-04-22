@@ -1,71 +1,53 @@
-nav {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 10em;
+* {
+  margin: 0;
+  padding: 0;
 }
 
-.extensions {
-  margin-left: 11em;
+table {
+  border: 1px solid #ccc;
+  table-layout: fixed;
+  width: 100%;
 }
 
-.action .data:before { content: '('; }
-.action .data:after { content: ')'; }
-
-.action .buttons > span {
-  font-family: monospace;
-  border-radius: 0.3em;
-  cursor: pointer;
-  margin: 0.4em;
-  padding: 0em 0.5em;
+table th {
+  height: 1em;
 }
 
-.action .ok {
-  background: #0a0;
-  color: #fff;
-}
-.action .ok:hover {
-  background: #0f0;
+td {
+  vertical-align: top;
+  overflow: hidden;
 }
 
-.action .cancel {
-  background: #a00;
-  color: #fff;
+ul {
+  list-style: none
 }
-.action .cancel:hover {
+
+li {
+  border: 1px solid grey;
+}
+
+li.active {
+  background: #ccc;
+}
+
+li.active:after {
+  content: "\27A4";
+  float: right;
+}
+
+li.open {
   background: #f00;
+  color: #fff;
 }
 
-
-dt {
-  margin: 0;
-  padding: 0;
-  display: inline;
-  font-weight: bold;
-}
-dt:after {
-  content: ': ';
-}
-
-dd {
-  margin: 0;
-  padding: 0;
-  display: inline;
-}
-
-li.action {
-  background: #cff;
-}
-
-dl.condition {
-  background: #fcf;
-}
-
-dl.extension {
-  margin-top: 1em;
-  background: #ffc;
-}
-
-dt.description, dd.description, dt.name, dd.name {
+li .parent, li .id, li .position, li .context_id, li .extension_id, li .condition_id, li .continue {
   display: none;
 }
+
+#actions .data:before { content: "("; }
+#actions .data:after  { content: ")"; }
+
+#conditions .matcher { font-weight: bold; }
+#conditions .matcher:after { content: ": "; }
+#conditions .break:before { content: " break: " }
+#conditions .break { color: #f00; }

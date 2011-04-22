@@ -12,15 +12,6 @@ module FXC
     end
 
     def context(name = nil)
-      if name
-        context = FXC::Context.find(:name => name.downcase)
-        @extensions = FXC::Extension.filter(context_id: context.id)
-      else
-        @extensions = FXC::Extension
-      end
-    end
-
-    def context_split(name = nil)
       @contexts = FXC::Context
       @extensions = FXC::Extension
       @conditions = FXC::Condition
