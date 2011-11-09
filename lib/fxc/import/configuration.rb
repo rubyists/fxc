@@ -28,6 +28,7 @@ module FXC
       class << self
         # configs with only <settings> section
         alias alsa _settings
+        alias cepstral _settings
         alias cidlookup _settings
         alias db _settings
         alias dialplan_directory _settings
@@ -38,6 +39,7 @@ module FXC
         alias fax _settings
         alias lua _settings
         alias memcache _settings
+        alias mongo _settings
         alias nibblebill _settings
         alias perl _settings
         alias pocketsphinx _settings
