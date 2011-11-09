@@ -361,7 +361,7 @@ module FXC
           profiles[profile[:name]] = ph = {}
           _settings(profile, ph)
 
-          ph[:aliases] = profile.xpath('aliases').map{|a| a[:name] }
+          ph[:aliases] = profile.xpath('aliases/alias').map{|a| a[:name] }
           ph[:domains] = domains = {}
           profile.xpath('domains/domain').each do |domain|
             domains[domain[:name]] = {
