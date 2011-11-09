@@ -2,6 +2,9 @@
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
 #
+
+require 'fileutils'
+
 desc 'Run all bacon specs with pretty output'
 task :bacon => :install_dependencies do
   require 'open3'
@@ -27,7 +30,7 @@ task :bacon => :install_dependencies do
   specs.each_with_index do |spec, idx|
     print(left_format % [idx + 1, specs_size, spec])
 
-    Open3.popen3(RUBY, spec) do |sin, sout, serr|
+    Open3.popen3(FileUtils::RUBY, spec) do |sin, sout, serr|
       out = sout.read.strip
       err = serr.read.strip
 
