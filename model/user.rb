@@ -81,19 +81,25 @@ class FXC::User < Sequel::Model
     values[:password] = ::FXC::User.digestify(other)
   end
 
-  def self.next_extension
-    gaps = FXC.db[:users___m].
-      left_join(:users___r, :ascii.sql_function(:m__extension)=>:ascii.sql_function(:r__extension) - 1).
+  def self.extension_gaps
+    FXC.db[:users___m].
+      left_join(:users___r, :m__extension.cast(:integer)=>(:r__extension.cast(:integer) - 1)).
       filter(:r__extension=>nil).
       select{[(m__extension.cast(:integer)+1).as(start),
               FXC.db[:users___x].select{:min.sql_function(extension.cast(:integer) - 1).cast(:text)}.
               filter{x__extension>m__extension}.as(stop)]}.
       from_self(:alias=>:x).exclude(:stop=>'').select(:start, :stop)
-    if gap = gaps.first
+  end
+
+  def self.max_extension
+    FXC.db[:users].select(:max.sql_function(:extension).as(:ext)).order(:ext.desc).limit(1)
+  end
+
+  def self.next_extension
+    if gap = extension_gaps.first
       return gap[:start]
     else
-      max = FXC.db[:users].select(:max.sql_function(:extension).as(:ext)).order(:ext.desc).limit(1)
-      if last = max.first
+      if last = max_extension.first
         (last[:ext].to_i + 1).to_s
       else
         raise "No extensions available!"
