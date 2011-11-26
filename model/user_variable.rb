@@ -14,4 +14,8 @@ class FXC::UserVariable < Sequel::Model(FXC.db[:user_variables])
   def scaffold_name
     "#{name}: #{value}"
   end
+
+  def to_s
+    name.to_s
+  end
 end

@@ -56,7 +56,7 @@ describe 'directory' do
     user[:id].should == '1902'
     user[:cidr].should == '0.0.0.0/0'
 
-    user.at("params/param[@name='password']")[:value].should =~ /^\d{4}$/
+    user.at("params/param[@name='vm-password']")[:value].should =~ /^\d{4}$/
     user.at("params/param[@name='dial-string']").should.not.be.nil
   end
 
@@ -72,7 +72,7 @@ describe 'directory' do
     user[:id].should == '1902'
     user[:cidr].should == '0.0.0.0/0'
 
-    user.at("params/param[@name='password']")[:value].should =~ /^\d{4}$/
+    user.at("params/param[@name='vm-password']")[:value].should =~ /^\d{4}$/
     user.at("params/param[@name='dial-string']").should.not.be.nil
   end
 

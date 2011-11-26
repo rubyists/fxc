@@ -7,7 +7,7 @@ require FXC::ROOT/:lib/:fxc/:dialstring
 require "digest/sha1"
 class FXC::User < Sequel::Model
   set_dataset FXC.db[:users]
-  one_to_many :user_variables, :class => 'FXC::UserVariable'
+  one_to_many :variables, :class => 'FXC::UserVariable'
   one_to_many :targets, :class => 'FXC::Target'
   one_to_many :dids, :class => 'FXC::Did'
   many_to_one :context, :class => 'FXC::Context'
@@ -23,6 +23,13 @@ class FXC::User < Sequel::Model
     :dialstring => :string,
     :password => :string,
   }
+  def params
+    {
+      'dial-string' => dialstring,
+      'password' => password,
+      'vm-password' => pin
+    }
+  end
 
   def scaffold_name
     "#{display_name} (#{username})"
@@ -51,13 +58,17 @@ class FXC::User < Sequel::Model
     FXC::Context.default.add_user(self) if context.nil?
     default_variables.each do |var|
       name, value = var.map { |s| s.to_s }
-      if current = user_variables.detect { |d| d.name == name }
+      if current = variables.detect { |d| d.name == name }
         current.value = value
         current.save
       else
-        add_user_variable(FXC::UserVariable.new(:name => name, :value => value))
+        add_variable(FXC::UserVariable.new(:name => name, :value => value))
       end
     end
+  end
+
+  def self.from_extension(ext,_)
+    find(extension: ext, active: true)
   end
 
   def self.active_users
@@ -114,7 +125,8 @@ class FXC::User < Sequel::Model
 
   def validate
     if new?
-      extension = self.next_extension if (self[:extension].nil? || self[:extension].empty?)
+      self[:extension] = User.next_extension if (self[:extension].nil? || self[:extension].empty?)
+      self[:mailbox] ||= self[:extension]
       @errors.add(:extension, "can not be directly assigned above 3175") if extension and extension.to_i > 3175
     end
     if me = FXC::User[:extension => extension]
@@ -125,7 +137,7 @@ class FXC::User < Sequel::Model
     end
     @errors.add(:email, "must be a valid email address") unless email.to_s.match(/^(?:[^@\s]+?@[^\s@]{6,})?$/)
     @errors.add(:pin, "must be all digits (4 minimum)") unless pin.to_s.match(/^(?:\d\d\d\d+)?$/)
-    @errors.add(:extension, "must be all digits (4 minimum)") unless extension.to_s.match(/^(?:\d\d\d\d+)?$/)
-    @errors.add(:mailbox, "must be all digits (4 minimum)") unless mailbox.to_s.match(/^(?:\d\d\d\d+)?$/)
+    @errors.add(:extension, "must be all digits") unless self[:extension] =~ /^(\d+)$/
+    @errors.add(:mailbox, "must be all digits") unless mailbox =~ /^(?:\d+)$/
   end
 end

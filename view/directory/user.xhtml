@@ -1,13 +1,12 @@
-<user id="#{h @user.id}" mailbox="#{h @user.mailbox}" cidr="#{h @user.cidr}">
+<user id="#{h @user.extension}" mailbox="#{h @user.mailbox}" cidr="#{h @user.cidr}">
   <params>
-    <param name="dial-string" value="#{h @user.dialstring}"/>
     <?r @user.params.each do |key, value| ?>
       <param name="#{h key}" value="#{h value}"/>
     <?r end ?>
   </params>
   <variables>
-    <?r @user.variables.each do |key, value| ?>
-      <variable name="#{h key}" value="#{h value}" />
+    <?r @user.variables.each do |variable| ?>
+      <variable name="#{h variable.name}" value="#{h variable.value}" />
     <?r end ?>
   </variables>
 </user>

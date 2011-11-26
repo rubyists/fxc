@@ -10,7 +10,7 @@ describe "Dialstring" do
     dialstring = FXC::Dialstring.new(@user, [])
     dialstring.to_s.should.equal @user.values[:dialstring]
   end
-  
+
   it "should return the dialstring passed as default when there are no targets given" do
     dialstring = FXC::Dialstring.new(@user, [], endpoint = "sofia/external/abc@example.com")
     dialstring.to_s.should.equal endpoint
@@ -23,7 +23,7 @@ describe "Dialstring" do
     dialstring = FXC::Dialstring.new(@user, [target])
     dialstring.to_s.should.equal target.dialstring
   end
-  
+
   it "should return a single target with a dummy provider when none are in the db" do
     target = FXC::Target.find_or_create(:value => "8881112345")
     dialstring = FXC::Dialstring.new(@user, [target], "error/do-not-call")
@@ -39,7 +39,7 @@ describe "Dialstring" do
       dialstring.provider.format(target.dialstring).should.equal "sofia/external/78881112345@sip.unexample.net:5060"
       dialstring.to_s.should.equal dialstring.provider.format(target.dialstring)
     ensure
-      provider.destroy
+      provider.destroy if provider
     end
   end
 

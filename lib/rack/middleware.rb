@@ -82,6 +82,7 @@ module FXC
         if params["key_name"] == "name"
           s << params["key_value"]
         end
+        p s
         s.join("/")
       end
 

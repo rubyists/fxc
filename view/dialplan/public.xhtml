@@ -11,7 +11,7 @@
     <action application="set" data="continue_on_fail=true"/>
     <action application="db" data="insert/$${domain}-call_return/#{@did.user.extension}/${caller_id_number}" />
     <action application="db" data="insert/$${domain}-last_dial_ext/#{@did.user.extension}/${uuid}"/>
-    <action application="set" data="called_party_callgroup=#{@did.user.user_variables_dataset.filter(:name => 'accountcode').first.value || 'none'}"/>
+    <action application="set" data="called_party_callgroup=#{@did.user.variables_dataset.filter(:name => 'accountcode').first.value || 'none'}"/>
     <action application="db" data="insert/$${domain}-last_dial/${called_party_callgroup}/${uuid}" />
     <action application="set" data="call_record_path=$${base_dir}/recordings/${strftime(%Y%m%d-%H%M%S)}-${caller_id_number}-#{@did.user.extension}-IN.wav" />
     <action application="set" data="api_hangup_hook=system mv ${call_record_path} ${call_record_path}-DONE" />
