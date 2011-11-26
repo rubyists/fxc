@@ -1,73 +1,3 @@
-module FXC
-  class User
-    include Makura::Model
-
-    defaults['type'] = 'user'
-
-    properties(
-      :buttons, :domain, :gateways, :groups, :id, :params, :server, :variables,
-      :targets, :cidr, :mailbox
-    )
-
-    def self.view_user_common(view, id, server = nil)
-      if server
-        query = {key: [id, server], limit: 1}
-      else
-        query = {startkey: [id], endkey: [id, {}], limit: 1}
-      end
-
-      query.merge!(limit: 1, include_docs: true)
-      Innate::Log.debug(query: query, view: view)
-      row = database.view(view, query)['rows'].first
-      Innate::Log.debug(row: row)
-      doc = row['doc'] if row
-      new(doc) if doc
-    end
-
-    def self.view_user(id, server = nil)
-      view_user_common('directory/_view/users', id, server)
-    end
-
-    def self.view_active_user(id, server = nil)
-      view_user_common('directory/_view/active_users', id, server)
-    end
-
-    def self.from_extension(extension, server = nil)
-      view_user(extension, server)
-    end
-
-    def self.active_from_extension(extension, server = nil)
-      view_active_user(extension, server)
-    end
-
-    def self.active_users
-      rows = database.view('directory/_view/active_users', include_docs: true)['rows']
-      rows.map do |row|
-        doc = row['doc']
-        new(doc) if doc
-      end.compact
-    end
-
-    def dialstring
-      (targets || {}).group_by{|name, properties|
-        properties['priority']
-      }.map{|priority, values|
-        values.map(&:first).join(',')
-      }.join('|')
-    end
-
-    def add_target(name, priority = 1, type = 'landline')
-      priority, type = priority.to_i, type.to_s.strip
-      raise ArgumentError, "priority must be > 0" unless priority > 0
-      raise ArgumentError, "type cannot be empty" if type.empty?
-
-      self.targets ||= {}
-      targets[name] = {priority: priority, type: type}
-    end
-  end
-end
-
-__END__
 # Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
@@ -75,7 +5,8 @@ __END__
 require File.expand_path("../../lib/fxc", __FILE__)
 require FXC::ROOT/:lib/:fxc/:dialstring
 require "digest/sha1"
-class FXC::User < Sequel::Model(FXC.db[:users])
+class FXC::User < Sequel::Model
+  set_dataset FXC.db[:users]
   one_to_many :user_variables, :class => 'FXC::UserVariable'
   one_to_many :targets, :class => 'FXC::Target'
   one_to_many :dids, :class => 'FXC::Did'
@@ -102,7 +33,7 @@ class FXC::User < Sequel::Model(FXC.db[:users])
   end
 
   def dialstring
-    pk ? FXC::Dialstring.new(self, targets, '').to_s : ''
+    pk ? FXC::Dialstring.new(self, targets).to_s : ''
   end
 
   def default_variables
@@ -150,6 +81,26 @@ class FXC::User < Sequel::Model(FXC.db[:users])
     values[:password] = ::FXC::User.digestify(other)
   end
 
+  def self.next_extension
+    gaps = FXC.db[:users___m].
+      left_join(:users___r, :ascii.sql_function(:m__extension)=>:ascii.sql_function(:r__extension) - 1).
+      filter(:r__extension=>nil).
+      select{[(m__extension.cast(:integer)+1).as(start),
+              FXC.db[:users___x].select{:min.sql_function(extension.cast(:integer) - 1).cast(:text)}.
+              filter{x__extension>m__extension}.as(stop)]}.
+      from_self(:alias=>:x).exclude(:stop=>'').select(:start, :stop)
+    if gap = gaps.first
+      return gap[:start]
+    else
+      max = FXC.db[:users].select(:max.sql_function(:extension).as(:ext)).order(:ext.desc).limit(1)
+      if last = max.first
+        (last[:ext].to_i + 1).to_s
+      else
+        raise "No extensions available!"
+      end
+    end
+  end
+
   protected
   def after_create
     set_default_variables
@@ -157,7 +108,8 @@ class FXC::User < Sequel::Model(FXC.db[:users])
 
   def validate
     if new?
-      @errors.add(:extension, "can not be directly assigned above 3175") if extension and extension > 3175
+      extension = self.next_extension if (self[:extension].nil? || self[:extension].empty?)
+      @errors.add(:extension, "can not be directly assigned above 3175") if extension and extension.to_i > 3175
     end
     if me = FXC::User[:extension => extension]
       @errors.add(:extension, "can not be duplicated") unless self[:id] and me[:id] == self[:id]
