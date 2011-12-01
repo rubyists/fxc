@@ -7,10 +7,6 @@ require_relative '../options'
 require FXC::LIBROOT/:fxc/:db
 raise "No DB Available" unless FXC.db
 
-require 'makura'
-Makura::Model.server = FXC.options.couch_uri
-Makura::Model.database = FXC.options.couch_db
-
 # Here go your requires for models:
 require_relative 'user'
 require_relative 'user_variable'
@@ -20,9 +16,9 @@ require_relative 'provider'
 require_relative 'server'
 require_relative 'context'
 require_relative 'voicemail'
-#require "sequel_orderable"
+# require "sequel_orderable"
 require_relative 'extension'
 require_relative 'condition'
 require_relative 'action'
 require_relative 'anti_action'
-require_relative 'configuration'
+# require_relative 'configuration'
