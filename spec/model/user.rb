@@ -78,6 +78,18 @@ describe 'FXC::User' do
     user.variables.size.should.equal 5
   end
 
+  it 'sets the effective_caller_id to "first_name last_name"' do
+    user = User.create(@defaults.merge(first_name: "Boe", last_name: "Jangles"))
+    (caller_id_number = user.variables.detect { |n| n.name == "effective_caller_id_name" }).should.not.be.nil
+    caller_id_number.value.should == "Boe Jangles"
+  end
+
+  it 'sets the effective_caller_id to fullname' do
+    user = User.create(@defaults.merge(fullname: "Mister Boe Jangles"))
+    (caller_id_number = user.variables.detect { |n| n.name == "effective_caller_id_name" }).should.not.be.nil
+    caller_id_number.value.should == "Mister Boe Jangles"
+  end
+
   it 'should set the user context to default upon creation' do
     user = User.new(:extension => "1234")
     user.context.should.be.nil

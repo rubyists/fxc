@@ -36,7 +36,31 @@ class FXC::User < Sequel::Model
   end
 
   def fullname
-    [first_name, last_name].join(" ")
+    self[:fullname] || [first_name, last_name].join(" ")
+  end
+
+  def caller_id_number
+    if cid = variables.detect { |n| n.name == "effective_caller_id_number" }
+      cid.value
+    else
+      extension
+    end
+  end
+
+  def caller_id_name=(other)
+    if cid = variables.detect { |n| n.name == "effective_caller_id_name" }
+      cid.update(value: other)
+    else
+      add_variable(name: "effective_caller_id_name", value: other)
+    end
+  end
+
+  def caller_id_name
+    if cid = variables.detect { |n| n.name == "effective_caller_id_name" }
+      cid.value
+    else
+      caller_id_number
+    end
   end
 
   def dialstring
