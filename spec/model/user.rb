@@ -5,7 +5,7 @@
 require File.expand_path('../../db_helper', __FILE__)
 
 describe 'FXC::User' do
-  User, Target = FXC::User, FXC::Target
+  User, Target, Extension = FXC::User, FXC::Target, FXC::Extension
   @defaults = {:extension => "1234", :username => "fxc", :first_name => "tj", :last_name => "vanderpoel", :password => "a+b3t4r;pvs6"}
   @auto_create_min = "1"
 
@@ -76,6 +76,14 @@ describe 'FXC::User' do
   it 'should add default user_variables when created' do
     user = User.create(@defaults)
     user.variables.size.should.equal 5
+  end
+
+  it 'creates a default route when a user is created' do
+    user = User.create(@defaults)
+    (ext = Extension.find(name: "#{user.extension} - #{user.fullname}")).should.not.be.nil
+    ext.conditions.size.should == 1
+    ext.conditions.first.actions.size.should == 6
+    ext.conditions.first.actions[2].data.should == user.dialstring
   end
 
   it 'sets the effective_caller_id to "first_name last_name"' do
