@@ -12,6 +12,7 @@ module FXC
     one_to_many :targets, :class => 'FXC::Target'
     one_to_many :dids, :class => 'FXC::Did'
     many_to_one :context, :class => 'FXC::Context'
+    one_to_many :extensions, class: 'FXC::Extension'
 
     @scaffold_human_name = 'User'
     @scaffold_column_types = {
@@ -29,6 +30,21 @@ module FXC
         'dial-string' => dialstring,
         'password' => password,
         'vm-password' => pin
+      }
+    end
+
+    def add_time_of_day_rule(time_min, time_max, day_min, day_max)
+      tod_string = "%s-%s:%s:%s" % [day_min, day_max, time_min, time_max]
+      #TODO Make Extension have a unique name?
+      e = add_extension(name: "#{extension} - TOD:#{tod_string}")
+      {:id=>3, :name=>nil, :description=>nil, :matcher=>"destination_number", :expression=>"^2171$", :position=>0, :break=>nil, :extension_id=>4, :year=>nil, :yday=>nil, :mon=>nil, :mday=>nil, :week=>nil, :mweek=>nil, :wday=>nil, :hour=>nil, :minute=>nil, :minute_of_day=>nil}
+      e.add_condition()
+    end
+
+    def time_of_day_routing_rules
+      tod_match = %r{TOD:(\d+)-(\d+):(\d+):(\d+)-(\d+):(\d+)$}
+      extensions.select { |e|
+        e.name =~ tod_match
       }
     end
 
@@ -144,13 +160,13 @@ module FXC
     end
 
     def create_default_route
-      ext = FXC::Extension.find_or_create(name: "#{extension} - #{fullname}", context_id: FXC::Context.default.id)
+      ext = FXC::Extension.find_or_create(user_id: self[:id], name: "#{extension} - #{fullname}", context_id: FXC::Context.default.id)
       current = ext.conditions.detect { |m| m.matcher == "destination_number" && m.expression == "^#{extension}$" }
       return current if current
       cond = ext.add_condition(matcher: "destination_number", expression: "^#{extension}$")
       cond.add_action(application: "set", data: "continue_on_fail=true")
       cond.add_action(application: "set", data: "hangup_after_bridge=true")
-      cond.add_action(application: "bridge", data: dialstring)
+      cond.add_action(application: "bridge", data: "user/#{extension}")
       cond.add_action(application: "answer")
       cond.add_action(application: "sleep", data: "1000")
       cond.add_action(application: "bridge", data: "loopback/app=voicemail:default ${domain_name} #{mailbox || extension}")
