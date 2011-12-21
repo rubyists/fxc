@@ -10,7 +10,7 @@ rescue LoadError
 end
 require "logger"
 ENV["PGHOST"] = PGHOST = "/tmp"
-ENV["PGPORT"] = PGPORT = "5433"
+ENV["PGPORT"] = PGPORT = "15433"
 # set PG_TEST_DIR to a location which you have write access to,
 # /dev/shm on linux makes it happen in memory.
 SHM = ENV["PG_TEST_DIR"] || "/dev/shm"
