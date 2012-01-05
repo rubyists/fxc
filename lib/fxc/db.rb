@@ -36,12 +36,13 @@ module FXC
     }
 
     file.readlines.each do |line|
+      next if line =~ /^\s*#/
       chunks = line.strip.split(/:/)
       dbs[chunks[2]] = Hash[defaults.keys.zip(chunks)]
     end
 
     db =  dbs[database] || dbs['*']
-    if db 
+    if db
       chosen = db.reject{|k,v| !v || v == '*' }
       defaults.merge(chosen)
     else
