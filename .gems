@@ -1,16 +1,16 @@
 # .gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
 bacon -v1.1.0
+daemons -v1.1.5
 eventmachine -v0.12.10
-fcgi -v0.8.8
-innate -v2011.10
-log4r -v1.1.9
+innate -v2011.12
+log4r -v1.1.10
 makura -v2011.01.21
 mime-types -v1.17.2
 nokogiri -v1.5.0
-pg -v0.11.0
-rack -v1.3.5
+pg -v0.12.2
+rack -v1.4.0
 rack-test -v0.6.1
-ramaze -v2011.10.23
+ramaze -v2011.12.28
 rest-client -v1.6.7
-sequel -v3.29.0
+sequel -v3.31.0
 thin -v1.3.1
