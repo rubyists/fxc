@@ -2,7 +2,9 @@
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
 #
-class FXC::Context < Sequel::Model(FXC.db[:dialplan_contexts])
+class FXC::Context < Sequel::Model
+  set_dataset FXC.db[:dialplan_contexts]
+
   one_to_many :users, :class => 'FXC::User'
   one_to_many :dids, :class => 'FXC::Did'
   one_to_many :extensions, :class => 'FXC::Extension'

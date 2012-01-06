@@ -18,9 +18,4 @@ module FXC
       not_found
     end
   end
-
 end
-
-require_relative 'directory'
-require_relative 'dialplan'
-require_relative 'admin'

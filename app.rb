@@ -1,7 +1,15 @@
+require 'json'
 require "innate"
+
 require_relative "lib/fxc"
+
 require_relative "options"
+
 require_relative 'node/proxy'
+require_relative 'node/directory'
+require_relative 'node/dialplan'
+require_relative 'node/admin'
+require_relative 'node/admin/context'
 
 require FXC::ROOT/"model/init"
 require FXC::ROOT/"lib/rack/middleware"
