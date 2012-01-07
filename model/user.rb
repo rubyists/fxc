@@ -28,24 +28,36 @@ module FXC
     def params
       {
         'dial-string' => dialstring,
-        'password' => password,
+        'password' => pin,
         'vm-password' => pin
       }
     end
 
-    def add_time_of_day_rule(time_min, time_max, day_min, day_max)
-      tod_string = "%s-%s:%s:%s" % [day_min, day_max, time_min, time_max]
-      #TODO Make Extension have a unique name?
+    def add_time_of_day_rule(time_min, time_max, day_min = 0, day_max = 6, actions = [])
+      tod_string = "%s-%s:%s-%s" % [day_min, day_max, time_min, time_max]
       e = add_extension(name: "#{extension} - TOD:#{tod_string}")
-      {:id=>3, :name=>nil, :description=>nil, :matcher=>"destination_number", :expression=>"^2171$", :position=>0, :break=>nil, :extension_id=>4, :year=>nil, :yday=>nil, :mon=>nil, :mday=>nil, :week=>nil, :mweek=>nil, :wday=>nil, :hour=>nil, :minute=>nil, :minute_of_day=>nil}
-      e.add_condition()
+      cond = e.add_condition(minute_of_day: "#{time_min}-#{time_max}", wday:"#{day_min}-#{day_max}", matcher: "destination_number", expression: %r{^#{extension}$}.to_s)
+      actions.each { |action|
+        p action
+        if action[:action] == :dial
+          if action[:numbers].size == 1
+            cond.add_action(
+              application: "transfer",
+              data: "#{action[:numbers].first} XML default"
+            )
+          else
+            ds = action[:numbers].map { |n| "sofia/internal/#{n}" }
+            cond.add_actions(application: "bridge", data: ds.join(","))
+          end
+        end
+      }
+      e.reload
     end
 
+    TOD_MATCH = %r{TOD:(\w+)-(\w+):(\d+)-(\d+)$}
+
     def time_of_day_routing_rules
-      tod_match = %r{TOD:(\d+)-(\d+):(\d+):(\d+)-(\d+):(\d+)$}
-      extensions.select { |e|
-        e.name =~ tod_match
-      }
+      extensions.select { |e| e.name =~ TOD_MATCH }
     end
 
     def scaffold_name
@@ -195,7 +207,7 @@ module FXC
       if new?
         self[:extension] = User.next_extension if (self[:extension].nil? || self[:extension].empty?)
         self[:mailbox] ||= self[:extension]
-        @errors.add(:extension, "can not be directly assigned above 3175") if extension and extension.to_i > 3175
+        #@errors.add(:extension, "can not be directly assigned above 3175") if extension and extension.to_i > 3175
       end
       if me = FXC::User[:extension => extension]
         @errors.add(:extension, "can not be duplicated") unless self[:id] and me[:id] == self[:id]

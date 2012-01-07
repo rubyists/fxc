@@ -1,4 +1,6 @@
-class FXC::Voicemail < Sequel::Model(FXC.db[:voicemail_msgs])
+class FXC::Voicemail < Sequel::Model
+  set_dataset FXC.db[:voicemail_msgs]
+
   @scaffold_human_name = 'Voicemail'
   @scaffold_column_types = {
     :cid_name => :string,

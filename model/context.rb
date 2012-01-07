@@ -9,6 +9,7 @@ class FXC::Context < Sequel::Model
   one_to_many :dids, :class => 'FXC::Did'
   one_to_many :extensions, :class => 'FXC::Extension'
   one_to_many :gateways, :class => 'FXC::SipGateway', :key => :dialplan_context_id
+  many_to_one :domains, :class => 'FXC::Domain'
 
   @scaffold_human_name = 'DID Context'
   @scaffold_column_types = {

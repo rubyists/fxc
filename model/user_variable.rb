@@ -2,7 +2,8 @@
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
 #
-class FXC::UserVariable < Sequel::Model(FXC.db[:user_variables])
+class FXC::UserVariable < Sequel::Model
+  set_dataset FXC.db[:user_variables]
   many_to_one :user, :class => 'FXC::User'
 
   @scaffold_human_name = 'User Variable'

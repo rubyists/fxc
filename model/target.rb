@@ -2,7 +2,8 @@
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
 #
-class FXC::Target < Sequel::Model(FXC.db[:targets])
+class FXC::Target < Sequel::Model
+  set_dataset FXC.db[:targets]
   many_to_one :user, :class => 'FXC::User'
   many_to_one :did, :class => 'FXC::Did'
 

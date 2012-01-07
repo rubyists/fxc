@@ -3,7 +3,8 @@
 # The full text can be found in the LICENSE file included with this software
 #
 
-class FXC::Did < Sequel::Model(FXC.db[:dids])
+class FXC::Did < Sequel::Model
+  set_dataset FXC.db[:dids]
   many_to_one :user, :class => 'FXC::User', :one_to_one => true
   one_to_many :targets, :class => 'FXC::Target'
   many_to_one :context, :class => 'FXC::Context'

@@ -1,4 +1,4 @@
-<user id="#{h @user.extension}" mailbox="#{h @user.mailbox}" cidr="#{h @user.cidr}">
+<user id="#{h @user.extension}" mailbox="#{h @user.mailbox}" cidr="#{@user.cidr}">
   <params>
     <?r @user.params.each do |key, value| ?>
       <param name="#{h key}" value="#{h value}"/>

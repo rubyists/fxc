@@ -7,7 +7,7 @@ class FXC::Extension < Sequel::Model
   set_dataset FXC.db[:fs_extensions]
   one_to_many :conditions, :class => 'FXC::Condition'
   many_to_one :context, :class => 'FXC::Context'
-  plugin :list, :scope => :context_id
+  plugin :list, :scope => [:context_id, :user_id]
 
   def self.match(context_id, params)
     all = FXC::Extension.filter(:context_id => context_id).all
@@ -72,21 +72,8 @@ class FXC::Extension < Sequel::Model
   end
 
   protected
-  def before_save
-    base = FXC::Extension.filter(:context_id => context_id)
-    base = base.filter(~{:id => self.id}) if self.id
-    max = base.order(:position.asc).last.position rescue -1
-    if self.position
-      p = self.position.to_i
-      if p > max
-        self.position = max + 1
-      else
-        bigger = base.filter{|o| o.position >= p}
-        bigger.update("position = (position + 1)")
-      end
-    else
-      self.position = max + 1
-    end
+  def before_create
+    self[:context_id] = Context.default.id unless self[:context_id]
   end
 
 end

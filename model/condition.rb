@@ -19,14 +19,30 @@ class FXC::Condition < Sequel::Model
     hour: "Hour, 0-23",
     minute: "Minute (of the hour), 0-59",
     minute_of_day: "Minute of the Day, 1-1440 (Midnight=1)"}
+
   def context
     extension.context
   end
+
   plugin :list, :scope => :extension_id
+
+  def minute_of_day_to_times
+    return nil unless minute_of_day
+    start, stop = minute_of_day.match(/(\d+)-(\d+)/).captures
+    start_hours, start_minutes = start.to_i.divmod(60)
+    stop_hours, stop_minutes = stop.to_i.divmod(60)
+    "%02d:%02d-%02d:%02d" % [start_hours, start_minutes, stop_hours, stop_minutes]
+  end
+
+  WDAYS = Hash[%w[sun mon tue wed thu fri sat].zip(Date::DAYNAMES)]
+
+  def wdays
+    WDAYS.values_at(*wday.split('-'))
+  end
 
   def break_string
     case self.break
-    when nil 
+    when nil
       'on-false'
     when false
       'never'
@@ -36,7 +52,7 @@ class FXC::Condition < Sequel::Model
   end
 
   def expression_string
-    out = [expression.to_s.dump]
+    out = [expression.to_s]
 
     TOD_FIELDS.keys.each do |key|
       next unless value = self[key]

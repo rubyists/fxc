@@ -1,7 +1,7 @@
 <?r @extensions.each do |extension| ?>
   <extension name="#{h extension.name}" continue="#{h extension.continue}">
   <?r extension.conditions.each do |condition| ?>
-    <condition field="#{h condition.matcher}" expression='#{h condition.expression_string}' break="#{h condition.break_string}">
+    <condition field="#{h condition.matcher}" expression="#{h condition.expression_string}" break="#{h condition.break_string}">
     <?r condition.actions.each do |act| ?>
       <action application="#{h act.application}" data="#{h act.data}" />
     <?r end ?>
