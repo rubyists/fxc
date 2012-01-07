@@ -10,7 +10,10 @@ task :migrate, :version do |_, args|
   require_relative "../options"
   require 'sequel/extensions/migration'
 
+  FXC.db.loggers << Logger.new($stdout)
+
   raise "No DB found" unless FXC.db
+  warn FXC.db.inspect
 
   require_relative "../model/init"
 
@@ -19,5 +22,4 @@ task :migrate, :version do |_, args|
   else
     Sequel::Migrator.run(FXC.db, FXC::MIGRATION_ROOT, :target => args.version.to_i)
   end
-
 end
