@@ -1,7 +1,7 @@
-# Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
+# Copyright (c) 2008-2012 The Rubyists, LLC <rubyists@rubyists.com>
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
-#
+
 module FXC
   module Rack
     class Middleware
@@ -11,81 +11,103 @@ module FXC
 
       def call(env)
         params = ::Rack::Request.new(env)
-        if params["section"]
-          path = params["section"] + "/"
-
-          path << case path
-          when "dialplan/"
-            dp_req(params)
-          when "directory/"
-            dir_req(params)
-          when "configuration/"
-            conf_req(params)
-          end
-
-          path << "/#{params["hostname"]}"
-          env["PATH_INFO"] = "#{env['PATH_INFO']}/#{path}".squeeze('/').sub(%r{/$},'')
-=begin
-          env["REQUEST_URI"] = ("%s://%s/%s" % [
-            env["rack.url_scheme"],
-            env["HTTP_HOST"],
-            env["PATH_INFO"]]).squeeze('/')
-=end
-        end
+        section_dispatch(env, params)
         @app.call(env)
       end
 
-      private
-      def dp_req(params)
-        s = [params["Caller-Context"]]
-        s << params["Caller-Destination-Number"]
-        s << params["Caller-Caller-ID-Number"]
-        s.compact.join("/")
-      end
+      def section_dispatch(env, params)
+        return unless section = params['section']
 
-      def dir_req(params)
-        s = []
-        if params["purpose"]
-          s << params["purpose"].gsub("-","_")
-          s << params["sip_profile"]
-        elsif params["action"] && params["action"] == "sip_auth"
-          s << "register"
-          s << params["sip_profile"]
-          s << params["sip_auth_username"]
-        elsif params["user"]
-          if params["action"] == "message-count"
-            s << "messages"
-            s << params["user"]
-            s << params["key_value"] if params["tag_name"] == "domain"
-          elsif params["Event-Calling-Function"]
-            case params["Event-Calling-Function"].to_s
-            when /voicemail/
-              s << "voicemail"
-              s << (params["sip_profile"] || "default")
-              s << params["user"]
-            when "user_outgoing_channel"
-              s << "user_outgoing"
-              s << params["user"]
-              s << params["domain"] if params["domain"]
-            when "user_data_function"
-              s << "user_data"
-              s << params["user"]
-              s << params["domain"] if params["domain"]
-            end
-          end
+        path = [env['PATH_INFO'], section]
+
+        case section
+        when 'dialplan'
+          dialplan(params, path)
+        when 'directory'
+          directory(params, path)
+        when 'configuration'
+          configuration(params, path)
         end
-        s.join("/")
+
+        path << params["hostname"]
+        env["PATH_INFO"] = path.flatten.join('/').squeeze('/').chomp('/')
       end
 
-      def conf_req(params)
-        s = []
-        if params["key_name"] == "name"
-          s << params["key_value"]
+      def configuration(params, path)
+        path << params['key_value'] if params['key_name'] == 'name'
+      end
+
+      def dialplan(params, path)
+        path << params.values_at(
+          'Caller-Context',
+          'Caller-Destination-Number',
+          'Caller-Caller-ID-Number',
+        ).compact
+      end
+
+      def directory(params, path)
+        if params['purpose']
+          directory_purpose(params, path)
+        elsif params['action'] == 'sip_auth'
+          directory_sip_auth(params, path)
+        elsif params['user']
+          directory_user(params, path)
         end
-        p s
-        s.join("/")
       end
 
+      def directory_purpose(params, path)
+        path << params['purpose'].tr('-', '_')
+        path << params['sip_profile']
+      end
+
+      def directory_sip_auth(params, path)
+        path << 'register'
+        path << params['sip_profile']
+        path << params['sip_auth_username']
+      end
+
+      def directory_user(params, path)
+        if params['action'] == 'message-count'
+          directory_user_message_count(params, path)
+        elsif params['Event-Calling-Function']
+          directory_user_event_calling_function(params, path)
+        end
+      end
+
+      def directory_user_message_count(params, path)
+        path << 'messages'
+        path << params['user']
+        path << params['key_value'] if params['tag_name'] == 'domain'
+      end
+
+      def directory_user_event_calling_function(params, path)
+        case params['Event-Calling-Function']
+        when /voicemail/
+          directory_user_voicemail(params, path)
+        when 'user_outgoing_channel'
+          directory_user_outgoing_channel(params, path)
+        when 'user_data_function'
+          directory_user_data_function(params, path)
+        end
+      end
+
+      def directory_user_voicemail(params, path)
+        path << 'voicemail'
+        path << params['sip_profile'] || 'default'
+        path << params['user']
+      end
+
+      def directory_user_outgoing_channel(params, path)
+        path << 'user_outgoing'
+        path << params['user']
+        path << params['domain']
+      end
+
+      def directory_user_data_function(params, path)
+        path << 'user_data'
+        path << params['user']
+        path << params['domain']
+      end
     end
   end
 end
