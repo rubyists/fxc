@@ -7,6 +7,7 @@ require_relative "options"
 
 require_relative 'node/main'
 require_relative 'node/context'
+require_relative 'node/super_admin'
 
 require_relative 'model/init'
 

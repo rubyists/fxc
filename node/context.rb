@@ -1,9 +1,11 @@
 module FXC
-  class ContextAdmin
-    Innate.node '/context', self
+  class ContextAdmin < Controller
+    map '/context'
     layout(:context){|name, wish| wish != "json" }
     provide :html, engine: :Etanni, type: 'text/html'
-    provide(:json, engine: :None, type: 'application/json'){|a,o| o.map(&:values).to_json }
+    provide(:json, engine: :None, type: 'application/json'){|a,o|
+      o.map(&:values).to_json
+    }
     helper :blue_form
 
     def index(name = nil)
