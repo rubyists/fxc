@@ -1,7 +1,3 @@
-# Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
-# Distributed under the terms of the MIT license.
-# The full text can be found in the LICENSE file included with this software
-#
 module FXC
   class Dialstring
     attr_reader :user, :targets, :default_dialstring, :provider
@@ -37,10 +33,10 @@ module FXC
           # Then we inject the dialstring string representation of the Targets
           # into another array, join it on commas, and join the different
           # levels of priority target strings on pipes
-        end.inject([]) do |l, t| 
-          l << t.map do |tgt| 
+        end.inject([]) do |l, t|
+          l << t.map do |tgt|
             provider.format(tgt.value)
-          end.join(",") 
+          end.join(",")
         end.join("|")
       else
         default_dialstring

@@ -1,8 +1,6 @@
-require 'json'
-
 module FXC
   class ContextAdmin
-    Innate.node '/admin/context', self
+    Innate.node '/context', self
     layout(:context){|name, wish| wish != "json" }
     provide :html, engine: :Etanni, type: 'text/html'
     provide(:json, engine: :None, type: 'application/json'){|a,o| o.map(&:values).to_json }

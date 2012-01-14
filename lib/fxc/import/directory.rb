@@ -11,12 +11,12 @@ module FXC
         server = doc[:server]
         doc["_id"] = "%s_%s.domain" % [server, domain]
         doc[:type] = "directory"
-        
+
         doc[:params] = params = {}
         node.xpath('params/param').each do |param|
           params[param[:name]] = param[:value]
         end
-        
+
         doc[:variables] = variables = {}
         node.xpath('variables/variable').each do |variable|
           variables[variable[:name]] = variable[:value]
@@ -27,10 +27,10 @@ module FXC
           groups << group[:name]
           group.xpath('users/user').each do |user|
             if user[:type] == "pointer"
-              u_id = "%s_%s_%s.user" % [server, domain, user[:id]] 
+              u_id = "%s_%s_%s.user" % [server, domain, user[:id]]
               begin
                 u = couchdb[u_id]
-                u["groups"] << group[:name] unless u["groups"].include?(group[:name]) 
+                u["groups"] << group[:name] unless u["groups"].include?(group[:name])
                 couchdb.save u
               rescue Makura::Error::ResourceNotFound => e
                 warn "Pointer record found for non-existent user #{u_id}"
@@ -67,7 +67,7 @@ module FXC
 
         user[:buttons] = buttons = {}
         node.xpath('skinny/buttons/button').each do |button|
-        # p button[:position]          
+        # p button[:position]
           buttons[button[:position]] = sb = {}
           button.attributes.each do |key, attribute|
             sb[key] = attribute.value unless key == "position"
@@ -78,16 +78,16 @@ module FXC
         node.xpath('gateways/gateway').each do |gateway|
           gateways[gateway[:id]] = gateway[:id]
           gateways[:params] = gparams = {}
-          node.xpath('param').each do |param|          
+          node.xpath('param').each do |param|
             gparams[param[:name]] = param[:value]
           end
         end
 
-        user 
+        user
       end
 
 
-     def default(xml, doc = {})   
+     def default(xml, doc = {})
         doc[:params] = params = {}
         doc[:groups] = groups = {}
         doc[:variables] = variables = {}
@@ -99,7 +99,7 @@ module FXC
         xml.xpath('variables/variable').each do |variable|
           variables[variable[:name]] = variable[:value]
         end
-        
+
         doc[:groups] = groups = {}
         xml.xpath('groups/group').each do |group|
           p group[:name]

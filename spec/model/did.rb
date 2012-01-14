@@ -1,7 +1,3 @@
-# Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
-# Distributed under the terms of the MIT license.
-# The full text can be found in the LICENSE file included with this software
-#
 require File.expand_path('../../db_helper', __FILE__)
 require FXC::ROOT/:spec/:directory_data
 
@@ -18,7 +14,7 @@ describe 'Did' do
     user = did.user
     user.class.should == FXC::User
   end
-  
+
   it "should use a user's default dialstring if it has no targets" do
     did = Did[:number => "1901"]
     did.dialstring.should == "{presence_id=${dialed_user}@$${domain}}${sofia_contact(default/${dialed_user}@$${domain})}"

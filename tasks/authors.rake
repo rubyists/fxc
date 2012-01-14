@@ -1,14 +1,10 @@
-# Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
-# Distributed under the terms of the MIT license.
-# The full text can be found in the LICENSE file included with this software
-#
-# Once git has a fix for the glibc in handling .mailmap and another fix for
-# allowing empty mail address to be mapped in .mailmap we won't have to handle
-# them manually.
-
 desc 'Update AUTHORS'
 task :authors do
   authors = Hash.new(0)
+
+  # Once git has a fix for the glibc in handling .mailmap and another fix for
+  # allowing empty mail address to be mapped in .mailmap we won't have to
+  # handle them manually.
 
   `git shortlog -nse`.scan(/(\d+)\s(.+)\s<(.*)>$/) do |count, name, email|
     # Examples of mappping, replace with your own or comment this out/delete it

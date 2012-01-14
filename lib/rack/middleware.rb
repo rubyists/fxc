@@ -1,7 +1,3 @@
-# Copyright (c) 2008-2012 The Rubyists, LLC <rubyists@rubyists.com>
-# Distributed under the terms of the MIT license.
-# The full text can be found in the LICENSE file included with this software
-
 module FXC
   module Rack
     class Middleware

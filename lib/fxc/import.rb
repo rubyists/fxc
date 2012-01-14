@@ -92,7 +92,7 @@ module FXC
       when :configuration
         convert_configuration
       when :directory
-         convert_directory 
+         convert_directory
       when :dialplan
         convert_dialplan
       end

@@ -1,38 +1,59 @@
-# Copyright (c) 2008-2009 The Rubyists, LLC (effortless systems) <rubyists@rubyists.com>
-# Distributed under the terms of the MIT license.
-# The full text can be found in the LICENSE file included with this software
-#
 require "pathname"
-task :legal do
-  license = Pathname("LICENSE")
-  license.open("w+") do |f|
-    f.puts PROJECT_COPYRIGHT
-  end unless license.file? and license.read == PROJECT_COPYRIGHT
-  doc = Pathname("doc/LEGAL")
-  doc.open("w+") do |f|
-    f.puts "LICENSE"
-  end unless doc.file?
+
+file 'LICENSE' do
+  File.open('LICENSE', 'w+') do |io|
+    io.puts PROJECT_COPYRIGHT
+  end
+end
+
+file 'doc/LEGAL' do
+  File.open('doc/LEGAL', 'w+') do |io|
+  end
 end
 
 desc "add copyright summary to all .rb files in the distribution"
-task :copyright => [:legal] do
-  doc = Pathname("doc/LEGAL")
-  ignore = doc.readlines.
-    select { |line| line.strip!; Pathname(line).file? }.
-    map { |file| Pathname(file).expand_path }
+task :copyright => ['LICENSE', 'doc/LEGAL'] do
+  ignore = File.readlines('doc/LEGAL').
+    map{|line| Pathname(line.strip).expand_path }.
+    select(&:file?)
 
   puts "adding copyright summary to files that don't have it currently"
   puts PROJECT_COPYRIGHT_SUMMARY
   puts
 
-  (Pathname.glob('{controller,model,app,lib,test,spec,migrations}/**/*{.rb}') + 
-   Pathname.glob("tasks/*.rake") +
-   Pathname.glob("Rakefile")).each do |file|
-    next if ignore.include? file.expand_path
-    lines = file.readlines.map{ |l| l.chomp }
-    unless lines.first(PROJECT_COPYRIGHT_SUMMARY.size) == PROJECT_COPYRIGHT_SUMMARY
-      oldlines = file.readlines
-      file.open("w+") { |f| f.puts PROJECT_COPYRIGHT_SUMMARY + oldlines }
+  [ '{controller,model,app,lib,test,spec,migrations}/**/*{.rb}',
+    'tasks/*.rake', 'Rakefile',
+  ].each do |glob|
+    Pathname.glob(glob) do |file|
+      ensure_copyright(file)
+    end
+  end
+end
+
+def ensure_copyright(file)
+  file.open 'r+' do |io|
+    line = io.gets.chomp
+
+    case line
+    when PROJECT_COPYRIGHT_SUMMARY
+      return
+    when /^#/
+      head = []
+      begin
+        head << line
+        line = io.gets.chomp
+      end while line =~ /^#|^\s*$/
+
+      original = io.read
+      io.truncate(0)
+      io.puts(PROJECT_COPYRIGHT_SUMMARY)
+      io.write(original)
+    else
+      io.rewind
+      original = io.read
+      io.truncate(0)
+      io.puts(PROJECT_COPYRIGHT_SUMMARY)
+      io.write(original)
     end
   end
 end

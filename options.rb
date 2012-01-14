@@ -5,7 +5,7 @@ module FXC
 
   options.dsl do
     o "Sequel Database URI (adapter://user:pass@host/database)", :db,
-      ENV["FXC_DB"] 
+      ENV["FXC_DB"]
 
     o "Couch Server URI (Default: http://localhost:5984/)", :couch_uri,
       ENV["FXC_CouchURI"] || 'http://localhost:5984/fxc'

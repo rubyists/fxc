@@ -48,7 +48,7 @@ loadContent = (root, plural, clear) ->
 
   selectEntry root
 
-  $.get "/admin/context/#{plural}/#{id}.json", (data) ->
+  $.get "/context/#{plural}/#{id}.json", (data) ->
     clear.html('')
     for row in data
       li = $('<li>', id: "#{plural}-#{row.id}")
@@ -66,7 +66,7 @@ setupLoader = (key, value) ->
 
 postPositionUpdate = (li, position) ->
   id = li.attr('id').split('-')[1]
-  $.post '/admin/context/position_update', {
+  $.post '/context/position_update', {
     id: id,
     category: li.closest('td').attr('id'),
     position: position,
