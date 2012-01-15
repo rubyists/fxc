@@ -200,11 +200,3 @@ module FXC
     end
   end
 end
-
-
-if __FILE__ == $0
-  converter = FXC::Converter.new
-  converter.convert(:configuration)
-  converter.convert(:directory)
-  converter.convert(:dialplan)
-end
