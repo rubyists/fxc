@@ -55,7 +55,7 @@
     _ref = root.attr('id').split('-'), current_name = _ref[0], id = _ref[1];
     ul = $("#" + plural + " ul");
     selectEntry(root);
-    return $.get("/admin/context/" + plural + "/" + id + ".json", function(data) {
+    return $.get("/context/" + plural + "/" + id + ".json", function(data) {
       var key, li, row, value, _i, _len, _results;
       clear.html('');
       _results = [];
@@ -91,7 +91,7 @@
   postPositionUpdate = function(li, position) {
     var id;
     id = li.attr('id').split('-')[1];
-    return $.post('/admin/context/position_update', {
+    return $.post('/context/position_update', {
       id: id,
       category: li.closest('td').attr('id'),
       position: position
