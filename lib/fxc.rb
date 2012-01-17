@@ -1,21 +1,24 @@
-require 'pathname'
-
-class Pathname
-  def /(other)
-    join(other.to_s)
-  end
-end
+require 'fsr'
+require 'pgpass'
+require 'sequel'
 
 module FXC
-  ROOT = Pathname(File.expand_path('../../', __FILE__))
-  LIBROOT = ROOT/:lib
-  MIGRATION_ROOT = ROOT/:db/:migrate
-  MODEL_ROOT = ROOT/:model
-  SPEC_HELPER_PATH = ROOT/:spec
-  def self.load_fsr
-    require "fsr"
-  rescue LoadError
-    require "rubygems"
-    require "fsr"
+  class Pathname < ::Pathname
+    def /(other)
+      join(other.to_s)
+    end
+  end
+
+  ROOT = File.expand_path('../../', __FILE__)
+  MIGRATION_ROOT = File.expand_path('db/migrate', ROOT)
+
+  @db ||= nil
+
+  def self.db
+    @db ||= Sequel.connect(FXC.options.db)
+  end
+
+  def self.db=(other)
+    @db = Sequel.connect(other)
   end
 end

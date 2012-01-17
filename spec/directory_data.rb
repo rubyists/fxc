@@ -1,12 +1,17 @@
-require FXC::SPEC_HELPER_PATH/:db_helper
+require_relative 'helper'
 
-user1 = FXC::User.create(:extension => "1901", :pin => "2121", :mailbox => "1901")
+FXC::User.delete
+FXC::Did.delete
+FXC::Target.delete
+FXC::Voicemail.delete
+
+user1 = FXC::User.find_or_create(:extension => "1901", :pin => "2121", :mailbox => "1901")
 user1.active = true
 user1.save
 
 user1.add_did(FXC::Did.new(:number => "1901", :clid_name => "Joe Smith", :description => "Inbound DID Test"))
 
-user2 = FXC::User.create(:extension => "1902", :pin => "3131", :mailbox => "1902")
+user2 = FXC::User.find_or_create(:extension => "1902", :pin => "3131", :mailbox => "1902")
 user2.active = true
 user2.save
 
@@ -14,7 +19,7 @@ user2.add_did(FXC::Did.new(:number => "1902", :clid_name => "John Doe", :descrip
 
 user2.add_target(FXC::Target.new(:value => "${sofia_contact(default/1902@${dialed_domain})}"))
 
-user3 = FXC::User.create(:extension => "1903", :pin => "3131")
+user3 = FXC::User.find_or_create(:extension => "1903", :pin => "3131")
 user3.active = true
 user3.save
 

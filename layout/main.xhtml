@@ -27,7 +27,14 @@
           <ul class="nav-bar">
             <li>#{FXC::Main.a 'Home', :/}</li>
             <li>#{FXC::ContextAdmin.a 'Context Editor', :/}</li>
-            <li>#{FXC::SuperAdmins.a 'Create Admin', :/}</li>
+            <li class="has-flyout">
+              <a href="#">Create</a>
+              <ul class="flyout">
+                <li>#{FXC::SuperAdmins.a 'Create SuperAdmin', :new_super_admin}</li> 
+                <li>#{FXC::SuperAdmins.a 'Create Admin', :new_admin}</li> 
+                <li>#{FXC::Admins.a 'Create Agent', :new_agent}</li> 
+              </ul>
+            </li>
           </ul>
         </nav>
         <hr />

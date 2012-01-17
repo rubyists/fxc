@@ -1,13 +1,15 @@
 module FXC
   class Dialstring
     attr_reader :user, :targets, :default_dialstring, :provider
+
     def initialize(user, targets, default_dialstring = nil, provider = nil)
       @user = user
       @targets = targets
       @default_dialstring = default_dialstring || @user.values[:dialstring]
-      @provider = provider
-      @provider = FXC::Provider[:priority => 0] if @provider.nil?
-      @provider = FXC::Provider.new(:host => "sip.example.com", :prefix => "1") if @provider.nil?
+
+      @provider = provider ||
+        FXC::Provider[:priority => 0] ||
+        FXC::Provider.new(host: "sip.example.com", prefix: "1")
     end
 
     def to_s

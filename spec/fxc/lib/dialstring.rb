@@ -1,5 +1,6 @@
-require File.expand_path("../../../db_helper", __FILE__)
-require FXC::ROOT/:lib/:fxc/:dialstring
+require_relative '../../helper'
+require_relative '../../../lib/fxc/dialstring'
+
 describe "Dialstring" do
   @user = FXC::User.create(:extension => "1909", :pin => "1234")
   it "should return the user's dialstring when there are no targets given, and no default" do

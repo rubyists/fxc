@@ -1,5 +1,5 @@
-require File.expand_path('../../db_helper', __FILE__)
-require FXC::SPEC_HELPER_PATH/:directory_data
+require_relative '../directory_data'
+
 describe 'directory' do
   behaves_like :rack_test
 

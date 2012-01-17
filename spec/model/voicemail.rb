@@ -1,4 +1,4 @@
-require File.expand_path('../../db_helper', __FILE__)
+require_relative '../helper'
 
 describe 'FXC::Voicemail' do
 

@@ -1,9 +1,9 @@
 <form class="six nice columns">
   <fieldset>
-    <legend>Create Administrator</legend>
+    <legend>Create Agent</legend>
 
     <p>
-      In order to create a new Administrator, we need their real name and email
+      In order to create a new Agent, we need their real name and email
       address.<br>
     </p>
 
@@ -13,12 +13,8 @@
     <label for="email">Email Address</label>
     <input type="email" id="email" name="email" class="input-text" required>
 
-    <label>Context</label>
-    <select>
-      <option selected>Guam 1</option>
-      <option>Paris 1</option>
-      <option>Paris 2</option>
-    </select>
+    <label for="ext">Extension</label>
+    <input type="number" id="ext" name="ext" class="input-text" required>
 
     <input type="submit" value="Create">
   </fieldset>

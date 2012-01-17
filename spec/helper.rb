@@ -1,12 +1,9 @@
-require File.expand_path('../../app', __FILE__)
+require_relative '../app'
 require 'nokogiri'
-require 'innate/spec/bacon'
-Innate::Log.loggers = [Logger.new(FXC::ROOT/:log/"innate.log")]
-Innate.middleware! :spec do |m|
-  m.use Rack::Lint
-  m.use Rack::CommonLogger, Innate::Log
-  m.use FXC::Rack::Middleware
-  m.innate
-end
+require 'ramaze/spec/bacon'
 
-Innate.options.roots = [FXC::ROOT]
+Ramaze::Log.loggers = [
+  Logger.new(File.expand_path('log/innate.log', FXC::ROOT))
+]
+
+Ramaze.options.roots = [FXC::ROOT]

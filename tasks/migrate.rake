@@ -1,9 +1,9 @@
 desc "migrate to latest version of db"
 task :migrate, :version do |_, args|
   args.with_defaults(:version => nil)
-  require File.expand_path("../../lib/fxc", __FILE__)
-  require_relative "../lib/fxc/db"
-  require_relative "../options"
+
+  require_relative '../lib/fxc'
+  require_relative '../options'
   require 'sequel/extensions/migration'
 
   FXC.db.loggers << Logger.new($stdout)
@@ -13,9 +13,10 @@ task :migrate, :version do |_, args|
 
   require_relative "../model/init"
 
-  if args.version.nil?
-    Sequel::Migrator.apply(FXC.db, FXC::MIGRATION_ROOT)
+  if /(?<version>\d+)/ =~ args.version
+    Sequel::Migrator.run(FXC.db, FXC::MIGRATION_ROOT, target: version.to_i)
   else
-    Sequel::Migrator.run(FXC.db, FXC::MIGRATION_ROOT, :target => args.version.to_i)
+    Sequel::Migrator.apply(FXC.db, FXC::MIGRATION_ROOT)
   end
 end
+

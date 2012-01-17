@@ -1,6 +1,7 @@
-require File.expand_path("../../lib/fxc", __FILE__)
-require FXC::ROOT/:lib/:fxc/:dialstring
+require_relative '../lib/fxc'
+require_relative '../lib/fxc/dialstring'
 require "digest/sha1"
+
 module FXC
   class User < Sequel::Model
     set_dataset FXC.db[:users]

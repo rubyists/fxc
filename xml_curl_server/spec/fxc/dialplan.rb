@@ -69,6 +69,4 @@ describe 'dialplan' do
     # Uses Target, not default User#dialstring
     bridge_action[:data].should.equal "${sofia_contact(default/1902@${dialed_domain})}"
   end
-
 end
-
