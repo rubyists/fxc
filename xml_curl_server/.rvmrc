@@ -1,0 +1,2 @@
+rvm --install --create use 1.9.3@fxc_xml_curl_server
+[[ -s .gems ]] && rvm gemset import .gems
