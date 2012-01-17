@@ -2,7 +2,7 @@ Class.new Sequel::Migration do
   def up
     unless FXC.db[:users].columns.include?(:superman)
       alter_table :users do
-        add_column :superman, FalseClass
+        add_column :superman, FalseClass, default: false
       end
     end
     unless FXC.db[:users].columns.include?(:domain_id)
@@ -13,8 +13,6 @@ Class.new Sequel::Migration do
   end
 
   def down
-    return unless FXC.db[:users].columns.include?(:fullname)
-
     alter_table :users do
       drop_column :superman
       drop_column :domain_id
