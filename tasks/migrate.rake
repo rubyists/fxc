@@ -6,7 +6,9 @@ task :migrate, :version do |_, args|
   require_relative '../options'
   require 'sequel/extensions/migration'
 
-  FXC.db.loggers << Logger.new($stdout)
+  if $VERBOSE
+    FXC.db.loggers << Logger.new($stdout)
+  end
 
   raise "No DB found" unless FXC.db
   warn FXC.db.inspect
