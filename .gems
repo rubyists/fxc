@@ -1,16 +1,24 @@
 # .gems generated gem export file. Note that any env variable settings will be missing. Append these after using a ';' field separator
 bacon -v1.1.0
+chunky_png -v1.2.5
+compass -v0.11.7
 daemons -v1.1.5
 eventmachine -v0.12.10
+freeswitcher -v0.7.1
+fssm -v0.2.8.1
+gist -v2.0.4
 innate -v2011.12
 log4r -v1.1.10
 makura -v2011.01.21
 mime-types -v1.17.2
 nokogiri -v1.5.0
 pg -v0.12.2
+pgpass -v2012.01
 rack -v1.4.0
 rack-test -v0.6.1
 ramaze -v2011.12.28
 rest-client -v1.6.7
+sass -v3.1.12
 sequel -v3.31.0
 thin -v1.3.1
+ZURB-foundation -v2.1.4
