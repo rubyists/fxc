@@ -11,6 +11,7 @@ require_relative 'node/directory'
 require_relative 'node/dialplan'
 
 Innate::Response.options.headers['Content-Type'] = 'freeswitch/xml'
+Innate.options.roots = [File.expand_path('../', __FILE__)]
 
 Innate.middleware! do |m|
   m.use Rack::ShowExceptions
