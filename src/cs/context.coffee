@@ -1,151 +1,143 @@
 p = ->
-  window.console?.debug?.apply(window.console, arguments)
+  window.console?.debug(arguments ...)
 
-openEditor = (root, editor) ->
-  $('li', root.parent()).removeClass('open')
-  root.addClass('open')
+Backbone.sync = Rubyists.BackboneWebSocketSync
 
-  editor.dialog('open')
+class Model extends Backbone.Model
+class Collection extends Backbone.Collection
+class View extends Backbone.View
 
-  $('input[type=text], input[type=hidden]', editor).each (i, e) ->
-    je = $(e)
-    name = je.attr('name')
-    value = $("span[class=#{name}]", root).text()
-    je.val(value)
+class Context extends Model
+  url: 'FXC::Context'
 
-  $('input[type=checkbox]', editor).each (i, e) ->
-    je = $(e)
-    name = je.attr('name')
-    value = $("span[class=#{name}]", root).text() == "true"
-    je.attr('checked', value)
+class Contexts extends Collection
+  url: 'FXC::Context::Collection'
+  model: Context
 
-  $('input[name=id]', editor).val(root.attr('id').split('-')[1])
+class Extension extends Model
+  url: 'FXC::Extension'
 
-closeEditor = (event) ->
-  editor = $(event.target).closest('.editor')
-  plural = editor.attr('id').split('-')[1]
-  $("##{plural} li").removeClass('open')
+class Extensions extends Collection
+  url: 'FXC::Extension::Collection'
+  model: Extension
 
-selectEntry = (root) ->
-  td = root.closest('td')
-  $('li', td).removeClass('active')
-  root.addClass('active')
-  name = td.attr('id')
-  add = $("##{name}-add")
-  addId = add.attr('id')
-  showAll = false
-  $('#browser th a').each (i, e) ->
-    je = $(e)
-    if showAll || je.attr('id') == addId # show all from here on
-      je.show()
-      showAll = true
-    else
-      je.hide()
+class Condition extends Model
+  url: 'FXC::Condition'
 
-loadContent = (root, plural, clear) ->
-  [current_name, id] = root.attr('id').split('-')
-  ul = $("##{plural} ul")
+class Conditions extends Collection
+  url: 'FXC::Condition::Collection'
+  model: Condition
 
-  selectEntry root
+class Browser extends View
+  tagName: 'table'
+  id: 'browser'
 
-  $.get "/context/#{plural}/#{id}.json", (data) ->
-    clear.html('')
-    for row in data
-      li = $('<li>', id: "#{plural}-#{row.id}")
-      for key, value of row
-        li.append($('<span>', class: key).text(value))
-      li.append($('<a>', href: "#", class: 'open-editor').html("&#x270D;"))
-      ul.append(li)
+  template: _.template("""
+<thead>
+  <tr>
+    <th>Context</th>
+    <th>Extension</th>
+    <th>Condition</th>
+    <th>Action</th>
+  </tr>
+  <tbody>
+    <tr>
+      <td class="contexts"></td>
+      <td class="extensions"></td>
+      <td class="conditions"></td>
+      <td class="actions"></td>
+    </tr>
+  </tbody>
+  """)
 
-setupLoader = (key, value) ->
-  $("##{key} li").live 'click', (event) ->
-    if value
-      loadContent $(event.target).closest('li'), value.open, $(value.clear)
-    else
-      selectEntry $(event.target).closest('li')
+  initialize: ->
+    _.bindAll(this, 'render')
+    @contextPane = new ContextPane
+    @extensionPane = new ExtensionPane
+    @conditionPane = new ConditionPane
+    @actionPane = new ActionPane
 
-postPositionUpdate = (li, position) ->
-  id = li.attr('id').split('-')[1]
-  $.post '/context/position_update', {
-    id: id,
-    category: li.closest('td').attr('id'),
-    position: position,
-  }
+  render: ->
+    $(@el).html(@template())
+    @$('.contexts').html(@contextPane.render().el)
+    @$('.extensions').html(@extensionPane.render().el)
+    @$('.conditions').html(@conditionPane.render().el)
+    @$('.actions').html(@actionPane.render().el)
+    this
 
-# TODO: position is not continuous, so on the first change we'll POST all
-#       items.  while that's not a fatal bug, it's a lot of useless traffic,
-#       unfortunately sequel doesn't seem to care.
-sortableUpdate = (event) ->
-  ul = $(event.originalEvent.target).closest('ul')
-  $('span[class=position]', ul).each (i, e) ->
-    je = $(e)
-    old = parseInt(je.text(), 10)
-    i += 1
-    unless old == i
-      je.text(i)
-      postPositionUpdate(je.closest('li'), i)
+  showContext: (context) ->
+    context
 
-relation = {
-  contexts:   { clear: '#extensions ul, #conditions ul, #actions ul', open: 'extensions' },
-  extensions: { clear: '#conditions ul, #actions ul', open: 'conditions'},
-  conditions: { clear: '#actions ul', open: 'actions' },
-  actions:    false,
-}
+class Pane extends View
+  tagName: 'td'
+  render: ->
+    $(@el).html(@template())
+    this
+
+class ContextPane extends View
+  tagName: 'ul'
+
+  initialize: ->
+    _.bindAll(this, 'renderOne', 'renderAll')
+    @contexts = new Contexts()
+    @contexts.bind('reset', @renderAll)
+    @contexts.bind('change', @renderAll)
+    @contexts.fetch()
+
+  renderAll: ->
+    $(@el).html('')
+    @contexts.each(@renderOne)
+
+  renderOne: (context) ->
+    view = new ContextItem(pane: this, context: context)
+    $(@el).append(view.render().el)
+
+  render: ->
+    @renderAll()
+    this
+
+  expand: (context) ->
+    @options.browser.showContext(context)
+
+class ContextItem extends View
+  tagName: 'li'
+  className: 'context'
+  events: {'click': 'showContext'}
+  template: _.template("""<%= name %>""")
+
+  initialize: ->
+    @context = @options.context
+
+  render: ->
+    $(@el).html(@template(name: @context.get('name')))
+    this
+
+  showContext: ->
+    @options.pane.expand(@context)
+    $(@el).addClass('active')
+
+class ExtensionPane extends Pane
+  id: 'extensions'
+  template: _.template("""
+Extension
+  """)
+
+class ConditionPane extends Pane
+  id: 'conditions'
+  template: _.template("""
+Condition
+  """)
+
+class ActionPane extends Pane
+  id: 'actions'
+  template: _.template("""
+Action
+  """)
+
+class Socket extends Rubyists.Socket
+  onopen: ->
+    browser = new Browser()
+    $('#context-browser').html(browser.render().el)
 
 $ ->
-  $('#editors .editor').dialog(
-    autoOpen: false,
-    width: 400,
-    close: closeEditor,
-  )
-
-  $('ul').sortable(
-    placeholder: 'ui-state-highlight',
-    update: sortableUpdate,
-  )
-  $('ul').disableSelection()
-
-  setupLoader(key, value) for key, value of relation
-        
-  $('.open-editor').live 'click', (e) ->
-    li = $(e.target).closest('li')
-    td = li.closest('td')
-    name = td.attr('id')
-    openEditor(li, $("#edit-#{name}"))
-
-  $('#browser th a').hide()
-
-  $('#contexts-add').click (e) ->
-    li = $('<li>')
-    li.append($('<span>', class: 'name').text('New Context'))
-    li.append($('<span>', class: 'description').text('New Context'))
-    li.append($('<a>', href: '#', class: 'open-editor').html('&#x270D;'))
-    $('#contexts ul').append(li)
-    false
-
-  $('#extensions-add').click (e) ->
-    li = $('<li>')
-    li.append($('<span>', class: 'parent').text($('#contexts .active').attr('id').split('-')[1]))
-    li.append($('<span>', class: 'name').text('New Extension'))
-    li.append($('<span>', class: 'description').text('New Description'))
-    li.append($('<a>', href: '#', class: 'open-editor').html('&#x270D;'))
-    $('#extensions ul').append(li)
-    false
-
-  $('#conditions-add').click (e) ->
-    li = $('<li>')
-    li.append($('<span>', class: 'parent').text($('#extensions .active').attr('id').split('-')[1]))
-    li.append($('<span>', class: 'name').text('New Condition'))
-    li.append($('<span>', class: 'description').text('New Condition'))
-    li.append($('<a>', href: '#', class: 'open-editor').html('&#x270D;'))
-    $('#conditions ul').append(li)
-    false
-
-  $('#actions-add').click (e) ->
-    li = $('<li>')
-    li.append($('<span>', class: 'parent').text($('#conditions .active').attr('id').split('-')[1]))
-    li.append($('<span>', class: 'name').text('New Action'))
-    li.append($('<span>', class: 'description').text('New Action'))
-    li.append($('<a>', href: '#', class: 'open-editor').html('&#x270D;'))
-    $('#actions ul').append(li)
-    false
+  Rubyists.syncSocket = new Socket(server: 'ws://localhost:9193')

@@ -1,12 +1,20 @@
 module FXC
   class ContextAdmin < Controller
     map '/context'
-    layout(:context){|name, wish| wish != "json" }
+    layout(:main){|name, wish| wish != "json" }
     provide :html, engine: :Etanni, type: 'text/html'
     provide(:json, engine: :None, type: 'application/json'){|a,o|
       o.map(&:values).to_json
     }
     helper :blue_form
+
+    trait js: [
+      '/js/jquery-ui-1.8.11.custom.min.js',
+      '/js/underscore.js',
+      '/js/backbone.js',
+      '/js/rubyists.js',
+      '/js/context.js',
+    ]
 
     def index(name = nil)
       @contexts = FXC::Context

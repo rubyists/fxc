@@ -11,6 +11,7 @@ module FXC
 
   ROOT = File.expand_path('../../', __FILE__)
   MIGRATION_ROOT = File.expand_path('db/migrate', ROOT)
+  Log = Ramaze::Log
 
   @db ||= nil
 

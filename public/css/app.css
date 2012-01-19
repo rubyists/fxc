@@ -2567,3 +2567,68 @@ table.hide-on-tablets {
     padding-top: 0;
   }
 }
+/* line 17, ../../src/sass/app.scss */
+#context-editor table {
+  border: 1px solid #ccc;
+  table-layout: fixed;
+  width: 100%;
+}
+/* line 23, ../../src/sass/app.scss */
+#context-editor table th {
+  height: 1em;
+}
+/* line 27, ../../src/sass/app.scss */
+#context-editor td {
+  vertical-align: top;
+  overflow: hidden;
+}
+/* line 32, ../../src/sass/app.scss */
+#context-editor ul {
+  list-style: none;
+}
+/* line 36, ../../src/sass/app.scss */
+#context-editor li {
+  border: 1px solid grey;
+}
+/* line 40, ../../src/sass/app.scss */
+#context-editor li.active {
+  background: #ccc;
+}
+/* line 44, ../../src/sass/app.scss */
+#context-editor li.active:after {
+  content: "\27A4";
+  float: right;
+}
+/* line 49, ../../src/sass/app.scss */
+#context-editor li.open {
+  background: #f00;
+  color: #fff;
+}
+/* line 54, ../../src/sass/app.scss */
+#context-editor li .parent, #context-editor li .id, #context-editor li .position, #context-editor li .context_id, #context-editor li .extension_id, #context-editor li .condition_id, #context-editor li .continue {
+  display: none;
+}
+/* line 58, ../../src/sass/app.scss */
+#context-editor #actions .data:before {
+  content: "(";
+}
+/* line 59, ../../src/sass/app.scss */
+#context-editor #actions .data:after {
+  content: ")";
+}
+/* line 61, ../../src/sass/app.scss */
+#context-editor #conditions .matcher {
+  font-weight: bold;
+}
+/* line 62, ../../src/sass/app.scss */
+#context-editor #conditions .matcher:after {
+  content: ": ";
+}
+/* line 63, ../../src/sass/app.scss */
+#context-editor #conditions .break:before {
+  content: " break: ";
+}
+/* line 64, ../../src/sass/app.scss */
+#context-editor #conditions .break {
+  color: #f00;
+}

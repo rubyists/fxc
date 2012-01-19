@@ -12,5 +12,5 @@
 # the same configuration.
 
 require ::File.expand_path('app', ::File.dirname(__FILE__))
-Innate.start(:file => __FILE__, :root => FXC::ROOT, :started => true)
-run Innate
+Ramaze.start(:file => __FILE__, :root => FXC::ROOT, :started => true)
+run Ramaze
