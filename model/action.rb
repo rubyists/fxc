@@ -18,11 +18,7 @@ class FXC::Action < Sequel::Model
 
   def before_create
     unless self[:position]
-      if max = last_position
-        self[:position] = max + 1
-      else
-        self[:position] = 1
-      end
+      self[:position] = last_position + 1
     end
   end
 end
