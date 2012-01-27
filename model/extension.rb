@@ -69,6 +69,11 @@ class FXC::Extension < Sequel::Model
   protected
   def before_create
     self[:context_id] = Context.default.id unless self[:context_id]
+    self[:position] = if (max = Extension.find(user_id: self[:user_id], context_id: self[:context_id]).order(:position.desc))
+                        max.position + 1
+                      else
+                        1
+                      end
   end
 
 end

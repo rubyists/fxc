@@ -4,20 +4,13 @@ class FXC::AntiAction < Sequel::Model
   plugin :list, :scope => :condition_id
 
   protected
-  def before_save
-    base = FXC::AntiAction.filter(:condition_id => self.condition_id)
-    base = base.filter(~{:id => self.id}) if self.id
-    max = base.order(:position.asc).last.position rescue -1
-    if self.position
-      p = self.position.to_i
-      if p > max
-        self.position = max + 1
+  def before_create
+    unless self[:position]
+      if max = last_position
+        self[:position] = max + 1
       else
-        bigger = base.filter{|o| o.position >= p}
-        bigger.update("position = (position + 1)")
+        self[:position] = 1
       end
-    else
-      self.position = max + 1
     end
   end
 end
