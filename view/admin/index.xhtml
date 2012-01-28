@@ -1,1 +1,7 @@
 Administrator Dashboard
+
+<ul>
+  <?r User.each do |user| ?>
+    <li>#{user.inspect}</li>
+  <?r end ?>
+</ul>
