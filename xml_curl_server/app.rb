@@ -1,4 +1,6 @@
 require 'innate'
+require 'ramaze'
+require 'pgpass'
 
 require_relative '../options'
 

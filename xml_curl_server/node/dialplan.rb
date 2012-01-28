@@ -36,7 +36,7 @@ module FXC
             Innate::Log.info("Routing to #{@extensions.inspect}")
             render_view(:extension)
           else
-            Innate::Log.info("No Matches!: " + request.inspect)
+            Innate::Log.info("No Matches!: ") # + request.inspect)
             not_found
           end
         end

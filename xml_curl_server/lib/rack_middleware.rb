@@ -26,6 +26,7 @@ module FXC
 
       path << params["hostname"]
       env["PATH_INFO"] = path.flatten.join('/').squeeze('/').chomp('/')
+      Innate::Log.debug "Path is: #{env['PATH_INFO']}"
     end
 
     def configuration(params, path)
@@ -88,7 +89,7 @@ module FXC
 
     def directory_user_voicemail(params, path)
       path << 'voicemail'
-      path << params['sip_profile'] || 'default'
+      path << (params['sip_profile'] || 'default')
       path << params['user']
     end
 

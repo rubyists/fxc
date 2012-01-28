@@ -40,8 +40,10 @@ module FXC
     end
 
     def voicemail(profile, extension, server = nil)
-      Innate::Log.debug("Received voicemail directory request: #{request.inspect}")
+      #Innate::Log.debug("Received voicemail directory request: #{request.inspect}")
+      Innate::Log.debug(voicemail: [profile, extension, server])
       user = User.from_extension(extension, server)
+      Innate::Log.debug(user: user)
       user ? render_view(:user, :user => user) : not_found
     end
 
