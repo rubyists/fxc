@@ -2,8 +2,17 @@ desc 'Setup postgresl database'
 task :spec_setup do
   require 'uri'
   require 'shellwords'
+  require 'pgpass'
 
-  db = ENV['FXC_DB'] ||= 'postgres://callcenter@localhost/fxc_spec'
+  db = ENV['FXC_DB'] || Pgpass.match(username: Etc.getlogin)
+  if db.nil?
+    warn "please set FXC_DB or create a .pgpass for #{Etc.getlogin}"
+    warn "to set the FXC_DB variable, you can do something like:"
+    warn "export FXC_DB=postgres://user:pass@host/dbname"
+    warn "more details on pgpass at http://www.postgresql.org/docs/current/static/libpq-pgpass.html"
+    exit 1
+  end
+
   uri = URI(db)
   case uri.scheme
   when 'postgres'

@@ -60,7 +60,7 @@ class FXC::Condition < Sequel::Model
   protected
   def before_create
     unless self[:position]
-      self[:position] = last_position +1
+      self[:position] = last_position + 1
     end
   end
 
